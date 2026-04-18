@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PrintForge13 – Créations en Impression 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --forge-black: #0a0a0b;
+      --forge-dark: #111114;
+      --forge-panel: #18181d;
+      --forge-steel: #2a2a35;
+      --forge-metal: #3d3d4a;
+      --forge-orange: #ff6b1a;
+      --forge-amber: #ffaa00;
+      --forge-glow: #ff8c42;
+      --forge-ember: #ff4500;
+      --forge-chrome: #c8cdd6;
+      --forge-silver: #8a909e;
+      --forge-dim: #4a4d5a;
+      --text: #e8eaf0;
+      --text-muted: #7a7d8a;
+      --radius: 4px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--forge-black);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* GRAIN OVERLAY */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: overlay;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 3rem;
+      height: 64px;
+      background: rgba(10,10,11,0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,107,26,0.15);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      color: var(--forge-chrome);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-logo span { color: var(--forge-orange); }
+
+    .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+
+    .nav-links a {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--forge-silver);
+      text-decoration: none;
+      transition: color 0.2s;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--forge-orange);
+      transform: scaleX(0);
+      transition: transform 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--forge-orange); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    .nav-cta {
+      background: var(--forge-orange) !important;
+      color: var(--forge-black) !important;
+      padding: 0.5rem 1.4rem !important;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      font-weight: 700 !important;
+      letter-spacing: 0.1em !important;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: var(--forge-amber) !important; color: var(--forge-black) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 8rem 4rem 4rem;
+      text-align: center;
+    }
+
+    /* Forge grid background */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,107,26,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,107,26,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
+    }
+
+    /* Orange glow emanating from center */
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(255,107,26,0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      color: var(--forge-orange);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(4rem, 10vw, 9rem);
+      letter-spacing: 0.04em;
+      line-height: 0.95;
+      color: var(--forge-chrome);
+      margin-bottom: 0.3rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.35s forwards;
+      text-shadow: 0 0 60px rgba(255,107,26,0.3);
+    }
+
+    .hero-title span {
+      color: var(--forge-orange);
+      display: block;
+    }
+
+    .hero-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.2em;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.5s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.65s forwards;
+    }
+
+    .btn-forge {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.85rem 2.2rem;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      transition: all 0.2s;
+      display: inline-block;
+    }
+
+    .btn-forge-primary {
+      background: var(--forge-orange);
+      color: var(--forge-black);
+    }
+
+    .btn-forge-primary:hover {
+      background: var(--forge-amber);
+      transform: translateY(-2px);
+    }
+
+    .btn-forge-outline {
+      background: transparent;
+      color: var(--forge-chrome);
+      border: 1.5px solid var(--forge-steel);
+    }
+
+    .btn-forge-outline:hover {
+      border-color: var(--forge-orange);
+      color: var(--forge-orange);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 4rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.8s forwards;
+    }
+
+    .hero-stat {
+      text-align: center;
+      position: relative;
+    }
+
+    .hero-stat::after {
+      content: '';
+      position: absolute;
+      right: -1.5rem; top: 20%; bottom: 20%;
+      width: 1px;
+      background: var(--forge-steel);
+    }
+
+    .hero-stat:last-child::after { display: none; }
+
+    .hero-stat-num {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.5rem;
+      color: var(--forge-orange);
+      line-height: 1;
+      display: block;
+    }
+
+    .hero-stat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--forge-silver);
+    }
+
+    /* ── SECTION BASE ── */
+    section { position: relative; z-index: 1; }
+
+    .section-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      color: var(--forge-orange);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .section-tag::before {
+      content: '//';
+      opacity: 0.5;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.05em;
+      color: var(--forge-chrome);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title span { color: var(--forge-orange); }
+
+    /* ── TICKER ── */
+    .ticker {
+      background: var(--forge-orange);
+      padding: 0.6rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-track {
+      display: inline-flex;
+      gap: 3rem;
+      animation: marquee 18s linear infinite;
+    }
+
+    .ticker-item {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 0.95rem;
+      letter-spacing: 0.2em;
+      color: var(--forge-black);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .ticker-item::after { content: '◆'; font-size: 0.5rem; opacity: 0.6; }
+
+    /* ── ABOUT ── */
+    .about {
+      padding: 6rem;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+      background: var(--forge-dark);
+    }
+
+    .about-content {}
+
+    .about-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--forge-silver);
+      font-weight: 400;
+      margin-bottom: 1.2rem;
+    }
+
+    .about-highlight {
+      border-left: 3px solid var(--forge-orange);
+      padding: 1rem 1.5rem;
+      background: rgba(255,107,26,0.05);
+      margin: 1.5rem 0;
+    }
+
+    .about-highlight p {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.4rem;
+      letter-spacing: 0.05em;
+      color: var(--forge-chrome);
+      line-height: 1.3;
+    }
+
+    .about-visual {
+      position: relative;
+    }
+
+    .about-logo-frame {
+      aspect-ratio: 1;
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .about-logo-frame::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 80%, rgba(255,107,26,0.15) 0%, transparent 60%);
+    }
+
+    .about-logo-placeholder {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 5rem;
+      color: var(--forge-orange);
+      opacity: 0.7;
+      letter-spacing: 0.05em;
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 40px rgba(255,107,26,0.5);
+    }
+
+    /* ── BOOK ── */
+    .book {
+      padding: 6rem;
+      background: var(--forge-black);
+    }
+
+    .book-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .book-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--forge-steel);
+      background: transparent;
+      color: var(--forge-silver);
+      cursor: pointer;
+      transition: all 0.2s;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      border-color: var(--forge-orange);
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .book-card {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s, border-color 0.25s;
+      cursor: pointer;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    }
+
+    .book-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--forge-orange);
+    }
+
+    .book-card:hover .book-card-overlay { opacity: 1; }
+
+    .book-card-img {
+      aspect-ratio: 4/3;
+      background: var(--forge-steel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-card-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(10,10,11,0.8) 100%);
+    }
+
+    .book-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,107,26,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .book-card-body {
+      padding: 1rem 1.2rem;
+    }
+
+    .book-card-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      color: var(--forge-chrome);
+      margin-bottom: 0.3rem;
+    }
+
+    .book-card-meta {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--forge-dim);
+      letter-spacing: 0.1em;
+    }
+
+    .book-card-tag {
+      position: absolute;
+      top: 0.6rem; right: 0.6rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      padding: 0.2rem 0.6rem;
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      font-weight: 700;
+      z-index: 2;
+    }
+
+    /* ── BOUTIQUE ── */
+    .boutique {
+      padding: 6rem;
+      background: var(--forge-dark);
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .product-card {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      position: relative;
+      clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+      transition: border-color 0.25s;
+    }
+
+    .product-card:hover { border-color: var(--forge-orange); }
+
+    .product-img {
+      aspect-ratio: 1;
+      background: var(--forge-steel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-img::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 90%, rgba(255,107,26,0.15) 0%, transparent 60%);
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 0; left: 0;
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    }
+
+    .product-body { padding: 1.5rem; }
+
+    .product-name {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.4rem;
+      letter-spacing: 0.06em;
+      color: var(--forge-chrome);
+      margin-bottom: 0.4rem;
+    }
+
+    .product-desc {
+      font-size: 0.88rem;
+      color: var(--forge-silver);
+      line-height: 1.6;
+      margin-bottom: 1.2rem;
+    }
+
+    /* COLOR PICKER */
+    .color-picker-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--forge-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .color-swatches {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
+    }
+
+    .swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .swatch:hover { transform: scale(1.15); }
+    .swatch.active { border-color: var(--forge-chrome); box-shadow: 0 0 0 2px var(--forge-orange); }
+
+    .swatch-tooltip {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      color: var(--forge-chrome);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      padding: 3px 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      letter-spacing: 0.05em;
+    }
+
+    .swatch:hover .swatch-tooltip { opacity: 1; }
+
+    .product-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.5rem;
+    }
+
+    .product-price {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.8rem;
+      color: var(--forge-orange);
+      letter-spacing: 0.04em;
+    }
+
+    .product-price span {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.8rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.1em;
+    }
+
+    .btn-add-cart {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.6rem 1.4rem;
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-add-cart:hover { background: var(--forge-amber); transform: translateY(-1px); }
+
+    .selected-color-display {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.8rem;
+      min-height: 1.2em;
+    }
+
+    /* Cart notification */
+    .cart-notif {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-orange);
+      color: var(--forge-chrome);
+      padding: 0.8rem 1.4rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      z-index: 500;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+
+    .cart-notif.show { transform: translateY(0); opacity: 1; }
+    .cart-notif span { color: var(--forge-orange); }
+
+    /* ── SOCIAL ── */
+    .social-section {
+      padding: 5rem 6rem;
+      background: var(--forge-black);
+      text-align: center;
+    }
+
+    .social-grid {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .social-card {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      padding: 2rem 2.5rem;
+      min-width: 200px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.7rem;
+      transition: border-color 0.2s, transform 0.2s;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+
+    .social-card:hover { border-color: var(--forge-orange); transform: translateY(-3px); }
+
+    .social-icon {
+      width: 48px; height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .social-handle {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--forge-chrome);
+      letter-spacing: 0.05em;
+    }
+
+    .social-name {
+      font-size: 0.7rem;
+      color: var(--forge-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ── CONTACT ── */
+    .contact {
+      padding: 6rem;
+      background: var(--forge-dark);
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .contact-info-text {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--forge-silver);
+      margin-bottom: 2rem;
+    }
+
+    .contact-email {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      padding: 0.8rem 1.2rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--forge-orange);
+      letter-spacing: 0.05em;
+    }
+
+    .contact-form {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      padding: 2rem;
+      clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+    }
+
+    .form-group { margin-bottom: 1rem; }
+
+    .form-group label {
+      display: block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: var(--forge-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      background: var(--forge-black);
+      border: 1px solid var(--forge-steel);
+      color: var(--text);
+      padding: 0.7rem 0.9rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--forge-orange);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 90px; }
+
+    .form-group select { cursor: pointer; }
+    .form-group select option { background: var(--forge-black); }
+
+    .btn-submit-forge {
+      width: 100%;
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      border: none;
+      padding: 0.9rem;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.1rem;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.5rem;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+
+    .btn-submit-forge:hover { background: var(--forge-amber); }
+
+    .form-success { display: none; text-align: center; padding: 2rem; }
+    .form-success.visible { display: block; }
+    .form-success-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+    .form-success p {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.3rem;
+      letter-spacing: 0.08em;
+      color: var(--forge-orange);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--forge-panel);
+      border-top: 1px solid var(--forge-steel);
+      padding: 2rem 6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.3rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.08em;
+    }
+
+    .footer-logo span { color: var(--forge-orange); }
+
+    .footer-copy {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--forge-dim);
+      letter-spacing: 0.1em;
+    }
+
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--forge-dim);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--forge-orange); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    @keyframes pulse-glow {
+      0%, 100% { text-shadow: 0 0 40px rgba(255,107,26,0.3); }
+      50% { text-shadow: 0 0 80px rgba(255,107,26,0.6); }
+    }
+
+    .hero-title { animation: fadeUp 0.7s 0.35s forwards, pulse-glow 3s 1.2s infinite; }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s, transform 0.6s;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 7rem 1.5rem 3rem; }
+      .hero-stats { gap: 1.5rem; }
+      .about, .contact { grid-template-columns: 1fr; padding: 3rem 1.5rem; gap: 2rem; }
+      .book, .boutique, .social-section { padding: 3rem 1.5rem; }
+      footer { padding: 1.5rem; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">PRINT<span>FORGE</span>13</a>
+  <ul class="nav-links">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#book">Réalisations</a></li>
+    <li><a href="#boutique">Boutique</a></li>
+    <li><a href="#social">Réseaux</a></li>
+    <li><a href="#contact" class="nav-cta">Commande</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-eyebrow">// Impression 3D · Couche par couche, du concept à l'objet //</div>
+  <h1 class="hero-title">
+    Print<span>Forge</span>
+  </h1>
+  <div class="hero-sub">— Créations uniques fabriquées à Marseille —</div>
+  <div class="hero-actions">
+    <a href="#boutique" class="btn-forge btn-forge-primary">Voir la boutique</a>
+    <a href="#book" class="btn-forge btn-forge-outline">Mes réalisations</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-num">100%</span>
+      <span class="hero-stat-label">Fait main</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">PLA+</span>
+      <span class="hero-stat-label">Matériaux</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">13</span>
+      <span class="hero-stat-label">Marseille</span>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Impression FDM</span>
+    <span class="ticker-item">Résine & PLA+</span>
+    <span class="ticker-item">Commandes personnalisées</span>
+    <span class="ticker-item">Livraison France entière</span>
+    <span class="ticker-item">Objets sur mesure</span>
+    <span class="ticker-item">Fichiers open source</span>
+    <span class="ticker-item">Impression FDM</span>
+    <span class="ticker-item">Résine & PLA+</span>
+    <span class="ticker-item">Commandes personnalisées</span>
+    <span class="ticker-item">Livraison France entière</span>
+    <span class="ticker-item">Objets sur mesure</span>
+    <span class="ticker-item">Fichiers open source</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-content reveal">
+    <div class="section-tag">À propos</div>
+    <h2 class="section-title">L'histoire <span>PrintForge</span></h2>
+    <div class="about-highlight">
+      <p>"Couche par couche, du concept à l'objet."</p>
+    </div>
+    <p class="about-text">
+      PrintForge13, c'est un atelier d'impression 3D basé à Marseille, né de la passion pour la création et la fabrication numérique. Chaque pièce est conçue, testée et imprimée avec soin, des premiers prototypes jusqu'à l'objet final entre vos mains.
+    </p>
+    <p class="about-text">
+      De la figurine décorative à la pièce fonctionnelle sur mesure, en passant par les accessoires sportifs — si vous pouvez l'imaginer, on peut l'imprimer.
+    </p>
+    <a href="#boutique" class="btn-forge btn-forge-primary" style="margin-top:1rem;">Découvrir la boutique</a>
+  </div>
+  <div class="about-visual reveal">
+    <div class="about-logo-frame">
+      <div class="about-logo-placeholder">PF13</div>
+    </div>
+  </div>
+</section>
+
+<!-- BOOK -->
+<section class="book" id="book">
+  <div class="book-header reveal">
+    <div>
+      <div class="section-tag">Galerie</div>
+      <h2 class="section-title">Mes <span>Réalisations</span></h2>
+    </div>
+    <div class="book-filters">
+      <button class="filter-btn active" onclick="filterBook(this,'all')">Tout</button>
+      <button class="filter-btn" onclick="filterBook(this,'deco')">Déco</button>
+      <button class="filter-btn" onclick="filterBook(this,'sport')">Sport</button>
+      <button class="filter-btn" onclick="filterBook(this,'custom')">Sur mesure</button>
+      <button class="filter-btn" onclick="filterBook(this,'tech')">Technique</button>
+    </div>
+  </div>
+  <div class="book-grid reveal" id="bookGrid">
+    <!-- Cards générées dynamiquement -->
+  </div>
+</section>
+
+<!-- BOUTIQUE -->
+<section class="boutique" id="boutique">
+  <div class="reveal">
+    <div class="section-tag">Boutique</div>
+    <h2 class="section-title">Commandez <span>en ligne</span></h2>
+    <p style="color:var(--forge-silver);font-size:0.95rem;margin-top:0.5rem;max-width:500px;line-height:1.7;">Chaque objet est imprimé à la commande. Choisissez votre couleur, ajoutez au panier — livraison sous 5 à 10 jours ouvrés.</p>
+  </div>
+  <div class="products-grid" id="productsGrid">
+    <!-- Product generated by JS -->
+  </div>
+</section>
+
+<!-- SOCIAL -->
+<section class="social-section" id="social">
+  <div class="reveal">
+    <div class="section-tag" style="justify-content:center;">Suivez l'aventure</div>
+    <h2 class="section-title">Nos <span>Réseaux</span></h2>
+  </div>
+  <div class="social-grid reveal">
+    <a href="https://www.instagram.com/printforge13" target="_blank" rel="noopener" class="social-card">
+      <div class="social-icon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="url(#ig)">
+          <defs><linearGradient id="ig" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" stop-color="#f09433"/><stop offset="50%" stop-color="#dc2743"/><stop offset="100%" stop-color="#bc1888"/></linearGradient></defs>
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+        </svg>
+      </div>
+      <div class="social-handle">@printforge13</div>
+      <div class="social-name">Instagram</div>
+    </a>
+    <a href="https://www.tiktok.com/@printforge13" target="_blank" rel="noopener" class="social-card">
+      <div class="social-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="#ffffff">
+          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.31 6.31 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+        </svg>
+      </div>
+      <div class="social-handle">@printforge13</div>
+      <div class="social-name">TikTok</div>
+    </a>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="reveal">
+    <div class="section-tag">Contact</div>
+    <h2 class="section-title">Une <span>commande</span> ?</h2>
+    <p class="contact-info-text">
+      Projet sur mesure, question sur un produit, devis — on répond à tout sous 48h.
+    </p>
+    <div class="contact-email">
+      <span style="font-size:1rem;">▶</span> Printforge13@gmail.com
+    </div>
+  </div>
+  <div class="contact-form reveal">
+    <div id="contactFormContent">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+        <div class="form-group">
+          <label>Prénom</label>
+          <input type="text" id="c_fname" placeholder="Thomas"/>
+        </div>
+        <div class="form-group">
+          <label>Nom</label>
+          <input type="text" id="c_lname" placeholder="Martin"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>E-mail *</label>
+        <input type="email" id="c_email" placeholder="thomas@exemple.fr"/>
+      </div>
+      <div class="form-group">
+        <label>Type de demande</label>
+        <select id="c_type">
+          <option value="">Choisir…</option>
+          <option value="commande">Commande produit</option>
+          <option value="custom">Projet sur mesure</option>
+          <option value="devis">Demande de devis</option>
+          <option value="question">Question générale</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="c_message" placeholder="Décrivez votre projet ou question…"></textarea>
+      </div>
+      <button class="btn-submit-forge" onclick="submitContact()">Envoyer ▶</button>
+    </div>
+    <div class="form-success" id="contactSuccess">
+      <div class="form-success-icon">⚙️</div>
+      <p>Message reçu !<br/>On revient vers vous sous 48h.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">PRINT<span>FORGE</span>13</div>
+  <div class="footer-links">
+    <a href="#about">À propos</a>
+    <a href="#book">Réalisations</a>
+    <a href="#boutique">Boutique</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 PrintForge13 — Marseille</div>
+</footer>
+
+<!-- CART NOTIFICATION -->
+<div class="cart-notif" id="cartNotif">⚙ <span id="cartNotifText">Produit ajouté</span></div>
+
+<script>
+// ── DATA ──
+const COLORS = [
+  { name: 'Noir Forgé',   hex: '#1a1a1a' },
+  { name: 'Gris Acier',   hex: '#6b7280' },
+  { name: 'Blanc Arctique', hex: '#f0f0f0' },
+  { name: 'Rouge Ember',  hex: '#dc2626' },
+  { name: 'Orange Forge', hex: '#ff6b1a' },
+  { name: 'Bleu Cobalt',  hex: '#2563eb' },
+  { name: 'Vert Army',    hex: '#4a7c59' },
+  { name: 'Or Métallisé', hex: '#d97706' },
+  { name: 'Bronze',       hex: '#a0522d' },
+  { name: 'Violet Neon',  hex: '#7c3aed' },
+];
+
+const PRODUCTS = [
+  {
+    id: 'medal-rack',
+    name: 'Porte-Médailles Sport',
+    desc: 'Support mural pour accrocher vos médailles de trail, course à pied, CrossFit, Hyrox ou tout autre sport. Fixation discrète au mur. Capacité 10+ médailles.',
+    price: 24.90,
+    badge: 'NOUVEAU',
+    emoji: '🏅',
+    category: 'sport',
+    availableColors: COLORS,
+  }
+];
+
+const BOOK_ITEMS = [
+  { title: 'Dragon Low-Poly', meta: 'PLA+ Noir · 18h impression', tag: 'DÉCO', cat: 'deco', emoji: '🐉' },
+  { title: 'Crâne Déco', meta: 'PLA+ Gris Acier · 12h impression', tag: 'DÉCO', cat: 'deco', emoji: '💀' },
+  { title: 'Porte-Médailles', meta: 'PLA+ Orange · 6h impression', tag: 'SPORT', cat: 'sport', emoji: '🏅' },
+  { title: 'Support Téléphone', meta: 'PETG Noir · 4h impression', tag: 'TECH', cat: 'tech', emoji: '📱' },
+  { title: 'Engrenage Déco', meta: 'PLA+ Bronze · 8h impression', tag: 'DÉCO', cat: 'deco', emoji: '⚙️' },
+  { title: 'Figurine Custom', meta: 'Résine grise · 10h impression', tag: 'SUR MESURE', cat: 'custom', emoji: '🧩' },
+];
+
+// ── RENDER BOOK ──
+function renderBook(filter = 'all') {
+  const grid = document.getElementById('bookGrid');
+  const items = filter === 'all' ? BOOK_ITEMS : BOOK_ITEMS.filter(i => i.cat === filter);
+  grid.innerHTML = items.map(item => `
+    <div class="book-card">
+      <div class="book-card-tag">${item.tag}</div>
+      <div class="book-card-img" style="font-size:3.5rem;">${item.emoji}</div>
+      <div class="book-card-overlay">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,107,26,0.9)" stroke-width="2"><path d="M15 3h6v6M14 10l7-7M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/></svg>
+      </div>
+      <div class="book-card-body">
+        <div class="book-card-title">${item.title}</div>
+        <div class="book-card-meta">${item.meta}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterBook(btn, cat) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBook(cat);
+}
+
+// ── RENDER PRODUCTS ──
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = PRODUCTS.map(p => {
+    const swatches = p.availableColors.map((c, i) => `
+      <div class="swatch ${i===0?'active':''}"
+           style="background:${c.hex};${c.hex==='#f0f0f0'?'border:1px solid #555;':''}"
+           onclick="selectColor(this,'${p.id}','${c.name}')"
+           data-product="${p.id}" data-color="${c.name}">
+        <span class="swatch-tooltip">${c.name}</span>
+      </div>
+    `).join('');
+
+    return `
+      <div class="product-card" id="card-${p.id}">
+        <div class="product-img">
+          <div class="product-badge">${p.badge}</div>
+          <span style="font-size:5rem;position:relative;z-index:1;">${p.emoji}</span>
+        </div>
+        <div class="product-body">
+          <div class="product-name">${p.name}</div>
+          <p class="product-desc">${p.desc}</p>
+          <div class="color-picker-label">// Couleur du filament</div>
+          <div class="color-swatches">${swatches}</div>
+          <div class="selected-color-display" id="color-display-${p.id}">
+            Sélectionné : ${p.availableColors[0].name}
+          </div>
+          <div class="product-price-row">
+            <div class="product-price">${p.price.toFixed(2).replace('.',',')} <span>€ TTC</span></div>
+            <button class="btn-add-cart" onclick="addToCart('${p.id}')">+ Panier</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectColor(el, productId, colorName) {
+  document.querySelectorAll(`[data-product="${productId}"]`).forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(`color-display-${productId}`).textContent = `Sélectionné : ${colorName}`;
+}
+
+async function addToCart(productId) {
+  const product = PRODUCTS.find(p => p.id === productId);
+  const colorEl = document.querySelector(`[data-product="${productId}"].active`);
+  const color = colorEl ? colorEl.dataset.color : 'Non sélectionnée';
+
+  // UI feedback : affiche "Chargement…"
+  const btn = document.querySelector(`#card-${productId} .btn-add-cart`);
+  const original = btn.textContent;
+  btn.textContent = '⏳ Chargement…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/.netlify/functions/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ productId, color, quantity: 1 }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+
+    // Redirige vers la page Stripe Checkout
+    window.location.href = data.url;
+
+  } catch (err) {
+    console.error(err);
+    alert(`Erreur : ${err.message}\nContacte-nous à Printforge13@gmail.com`);
+    btn.textContent = original;
+    btn.disabled = false;
+  }
+}
+
+// ── CONTACT ──
+async function submitContact() {
+  const email = document.getElementById('c_email').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('c_email').style.borderColor = '#dc2626';
+    document.getElementById('c_email').focus();
+    return;
+  }
+  const data = {
+    prenom:  document.getElementById('c_fname').value,
+    nom:     document.getElementById('c_lname').value,
+    email,
+    type:    document.getElementById('c_type').value,
+    message: document.getElementById('c_message').value,
+  };
+  // FORMSPREE: remplace 'xxxxxxxx' par ton endpoint
+  try {
+    const res = await fetch('https://formspree.io/f/xxxxxxxx', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (res.ok) {
+      document.getElementById('contactFormContent').style.display = 'none';
+      document.getElementById('contactSuccess').classList.add('visible');
+    } else { throw new Error(); }
+  } catch {
+    alert('Erreur. Contacte-nous directement par e-mail.');
+  }
+}
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── INIT ──
+renderBook();
+renderProducts();
+</script>
+</body>
+</html>

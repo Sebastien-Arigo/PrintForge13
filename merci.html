@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Commande confirmée – PrintForge13</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --forge-black: #0a0a0b;
+      --forge-panel: #18181d;
+      --forge-steel: #2a2a35;
+      --forge-orange: #ff6b1a;
+      --forge-chrome: #c8cdd6;
+      --forge-silver: #8a909e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--forge-black);
+      color: var(--forge-chrome);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+    .card {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      max-width: 480px;
+      width: 100%;
+      padding: 3rem 2.5rem;
+      clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+    }
+    .icon { font-size: 3rem; margin-bottom: 1.2rem; }
+    .title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.5rem;
+      letter-spacing: 0.06em;
+      color: var(--forge-orange);
+      margin-bottom: 0.8rem;
+    }
+    .subtitle {
+      font-size: 1rem;
+      color: var(--forge-silver);
+      line-height: 1.7;
+      margin-bottom: 2rem;
+    }
+    .info-box {
+      background: rgba(255,107,26,0.07);
+      border: 1px solid rgba(255,107,26,0.2);
+      padding: 1rem 1.2rem;
+      margin-bottom: 2rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--forge-orange);
+      letter-spacing: 0.08em;
+      line-height: 1.6;
+    }
+    .btn {
+      display: inline-block;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      padding: 0.8rem 2rem;
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      text-decoration: none;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+    .logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.1rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.1em;
+      margin-top: 2.5rem;
+      opacity: 0.5;
+    }
+    .logo span { color: var(--forge-orange); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">⚙️</div>
+    <div class="title">Commande confirmée !</div>
+    <p class="subtitle">
+      Merci pour ta commande. Elle est maintenant en file d'impression.<br/>
+      Un e-mail de confirmation t'a été envoyé.
+    </p>
+    <div class="info-box">
+      ▶ Délai de fabrication : 3 à 5 jours ouvrés<br/>
+      ▶ Expédition Colissimo suivi<br/>
+      ▶ Contact : Printforge13@gmail.com
+    </div>
+    <a href="/" class="btn">Retour au site</a>
+  </div>
+  <div class="logo">PRINT<span>FORGE</span>13</div>
+</body>
+</html>

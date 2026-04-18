@@ -1,0 +1,8 @@
+{
+  "name": "printforge13",
+  "version": "1.0.0",
+  "description": "PrintForge13 – Site e-commerce impression 3D",
+  "dependencies": {
+    "stripe": "^14.0.0"
+  }
+}
