@@ -370,16 +370,23 @@
     }
 
     .about-logo-frame {
-      aspect-ratio: 1;
-      background: var(--forge-panel);
-      border: 1px solid var(--forge-steel);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
-      position: relative;
-      overflow: hidden;
-    }
+  aspect-ratio: 1;
+  background: var(--forge-panel);
+  border: 1px solid var(--forge-steel);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-logo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1.5rem;
+}
 
     .about-logo-frame::before {
       content: '';
@@ -1021,7 +1028,7 @@
   <div class="about-visual reveal">
     <div class="about-logo-frame">
       <!--<div class="about-logo-placeholder">PF13</div>-->
-      <img src="Logo.png">
+      <img class="about-logo-placeholder" src="Logo.png" max-width: 100%; height: auto; display: block;>
     </div>
   </div>
 </section>
