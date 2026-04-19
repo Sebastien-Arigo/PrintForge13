@@ -1283,7 +1283,7 @@ async function addToCart(productId) {
   btn.disabled = true;
 
   try {
-    const res = await fetch('/.netlify/functions/checkout', {
+    const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ productId, color, quantity: 1 }),
