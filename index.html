@@ -370,23 +370,16 @@
     }
 
     .about-logo-frame {
-  aspect-ratio: 1;
-  background: var(--forge-panel);
-  border: 1px solid var(--forge-steel);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
-  position: relative;
-  overflow: hidden;
-}
-
-.about-logo-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  padding: 1.5rem;
-}
+      aspect-ratio: 1;
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      clip-path: polygon(20px 0%, 100% 0%, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0% 100%, 0% 20px);
+      position: relative;
+      overflow: hidden;
+    }
 
     .about-logo-frame::before {
       content: '';
@@ -691,6 +684,19 @@
 
     .btn-add-cart:hover { background: var(--forge-amber); transform: translateY(-1px); }
 
+    .prod-hover-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,107,26,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 2;
+    }
+    .product-card:hover .prod-hover-overlay { opacity: 1; }
+
     .selected-color-display {
       font-family: 'Share Tech Mono', monospace;
       font-size: 0.7rem;
@@ -981,7 +987,7 @@
       <span class="hero-stat-label">Fait main</span>
     </div>
     <div class="hero-stat">
-      <span class="hero-stat-num">PLA / PETG</span>
+      <span class="hero-stat-num">PLA+</span>
       <span class="hero-stat-label">Matériaux</span>
     </div>
     <div class="hero-stat">
@@ -993,7 +999,7 @@
 
 <!-- TICKER -->
 <div class="ticker">
-  <div class="ticker-track">
+   <div class="ticker-track">
     <span class="ticker-item">Impression FDM</span>
     <span class="ticker-item">PETG / PLA / TPU</span>
     <span class="ticker-item">Commandes personnalisées</span>
@@ -1023,8 +1029,7 @@
   </div>
   <div class="about-visual reveal">
     <div class="about-logo-frame">
-      <!--<div class="about-logo-placeholder">PF13</div>-->
-      <img class="about-logo-placeholder" src="Logo.png" max-width: 100%; height: auto; display: block;>
+      <div class="about-logo-placeholder">PF13</div>
     </div>
   </div>
 </section>
@@ -1158,7 +1163,7 @@
 
 <script>
 // ── DATA ──
-const COLORS = [
+  const COLORS = [
   { name: 'Noir mat',   hex: '#1a1a1a' },
   { name: 'Gris clair',   hex: '#D3D3D3' },
   { name: 'Blanc Arctique', hex: '#f0f0f0' },
@@ -1172,6 +1177,7 @@ const COLORS = [
   { name: 'Or Métallisé', hex: '#d97706' },
   { name: 'Jaune', hex: '#FFDE21' },
 ];
+
 
 const PRODUCTS = [
   {
@@ -1223,44 +1229,32 @@ function filterBook(btn, cat) {
 // ── RENDER PRODUCTS ──
 function renderProducts() {
   const grid = document.getElementById('productsGrid');
-  grid.innerHTML = PRODUCTS.map(p => {
-    const swatches = p.availableColors.map((c, i) => `
-      <div class="swatch ${i===0?'active':''}"
-           style="background:${c.hex};${c.hex==='#f0f0f0'?'border:1px solid #555;':''}"
-           onclick="selectColor(this,'${p.id}','${c.name}')"
-           data-product="${p.id}" data-color="${c.name}">
-        <span class="swatch-tooltip">${c.name}</span>
-      </div>
-    `).join('');
-
-    return `
-      <div class="product-card" id="card-${p.id}">
-        <div class="product-img">
-          <div class="product-badge">${p.badge}</div>
-          <span style="font-size:5rem;position:relative;z-index:1;">${p.emoji}</span>
-        </div>
-        <div class="product-body">
-          <div class="product-name">${p.name}</div>
-          <p class="product-desc">${p.desc}</p>
-          <div class="color-picker-label">// Couleur du filament</div>
-          <div class="color-swatches">${swatches}</div>
-          <div class="selected-color-display" id="color-display-${p.id}">
-            Sélectionné : ${p.availableColors[0].name}
-          </div>
-          <div class="product-price-row">
-            <div class="product-price">${p.price.toFixed(2).replace('.',',')} <span>€ TTC</span></div>
-            <button class="btn-add-cart" onclick="addToCart('${p.id}')">+ Panier</button>
-          </div>
+  grid.innerHTML = PRODUCTS.map(p => `
+    <div class="product-card" id="card-${p.id}" onclick="window.location.href='${p.id}.html'" style="cursor:pointer;">
+      <div class="product-img" style="position:relative;">
+        <div class="product-badge">${p.badge}</div>
+        <span style="font-size:5rem;position:relative;z-index:1;">${p.emoji}</span>
+        <div class="prod-hover-overlay">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,107,26,0.95)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
       </div>
-    `;
-  }).join('');
+      <div class="product-body">
+        <div class="product-name">${p.name}</div>
+        <p class="product-desc">${p.desc}</p>
+        <div class="product-price-row" style="margin-top:1rem;">
+          <div class="product-price">${p.price.toFixed(2).replace('.',',')} <span>€ TTC</span></div>
+          <a href="${p.id}.html" class="btn-add-cart" onclick="event.stopPropagation()">Voir la fiche →</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
 }
 
 function selectColor(el, productId, colorName) {
   document.querySelectorAll(`[data-product="${productId}"]`).forEach(s => s.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById(`color-display-${productId}`).textContent = `Sélectionné : ${colorName}`;
+  const disp = document.getElementById(`color-display-${productId}`);
+  if (disp) disp.textContent = `Sélectionné : ${colorName}`;
 }
 
 async function addToCart(productId) {
