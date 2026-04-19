@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Porte-Médailles Sport – PrintForge13</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --forge-black: #0a0a0b;
+      --forge-dark: #111114;
+      --forge-panel: #18181d;
+      --forge-steel: #2a2a35;
+      --forge-metal: #3d3d4a;
+      --forge-orange: #ff6b1a;
+      --forge-amber: #ffaa00;
+      --forge-chrome: #c8cdd6;
+      --forge-silver: #8a909e;
+      --forge-dim: #4a4d5a;
+      --text: #e8eaf0;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    img { max-width: 100%; height: auto; display: block; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--forge-black);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: overlay;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 3rem;
+      height: 64px;
+      background: rgba(10,10,11,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,107,26,0.15);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.6rem;
+      letter-spacing: 0.08em;
+      color: var(--forge-chrome);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--forge-orange); }
+
+    .nav-back {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--forge-silver);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--forge-orange); }
+
+    /* ── BREADCRUMB ── */
+    .breadcrumb {
+      padding: 5rem 6rem 0;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--forge-dim);
+      letter-spacing: 0.12em;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .breadcrumb a { color: var(--forge-dim); text-decoration: none; transition: color 0.2s; }
+    .breadcrumb a:hover { color: var(--forge-orange); }
+    .breadcrumb span { color: var(--forge-orange); }
+
+    /* ── MAIN LAYOUT ── */
+    .product-page {
+      padding: 2rem 6rem 6rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* ── GALLERY ── */
+    .gallery { position: sticky; top: 80px; }
+
+    .gallery-main {
+      aspect-ratio: 1;
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem;
+      clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 0.8rem;
+    }
+
+    .gallery-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gallery-badge {
+      position: absolute;
+      top: 0; left: 0;
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      padding: 0.35rem 1rem;
+      clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    }
+
+    .gallery-thumbs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+
+    .thumb {
+      aspect-ratio: 1;
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.8rem;
+      transition: border-color 0.2s;
+      overflow: hidden;
+    }
+
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .thumb:hover, .thumb.active { border-color: var(--forge-orange); }
+
+    /* ── PRODUCT INFO ── */
+    .product-info {}
+
+    .product-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      color: var(--forge-orange);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .product-tag::before { content: '//'; opacity: 0.5; }
+
+    .product-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: 0.04em;
+      color: var(--forge-chrome);
+      line-height: 1;
+      margin-bottom: 0.8rem;
+    }
+
+    .product-price-block {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--forge-steel);
+    }
+
+    .price-main {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.8rem;
+      color: var(--forge-orange);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .price-unit {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.1em;
+    }
+
+    .price-multi {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--forge-orange);
+      background: rgba(255,107,26,0.1);
+      border: 1px solid rgba(255,107,26,0.2);
+      padding: 0.3rem 0.7rem;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── SHORT DESC ── */
+    .short-desc {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--forge-silver);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── SPECS PILLS ── */
+    .specs-row {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.8rem;
+    }
+
+    .spec-pill {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--forge-steel);
+      color: var(--forge-silver);
+      background: var(--forge-panel);
+    }
+
+    /* ── COLOR PICKER ── */
+    .picker-section { margin-bottom: 1.5rem; }
+
+    .picker-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--forge-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .picker-label-selected {
+      color: var(--forge-orange);
+      font-weight: 700;
+      transition: color 0.15s;
+    }
+
+    .swatches {
+      display: flex;
+      gap: 0.55rem;
+      flex-wrap: wrap;
+    }
+
+    .swatch {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2.5px solid transparent;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .swatch:hover { transform: scale(1.18); }
+    .swatch.active {
+      border-color: var(--forge-chrome);
+      box-shadow: 0 0 0 2.5px var(--forge-orange);
+    }
+
+    .swatch-tooltip {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      color: var(--forge-chrome);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.6rem;
+      padding: 3px 7px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      letter-spacing: 0.05em;
+      z-index: 10;
+    }
+    .swatch:hover .swatch-tooltip { opacity: 1; }
+
+    /* ── QUANTITY ── */
+    .qty-section { margin-bottom: 2rem; }
+
+    .qty-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--forge-dim);
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      border: 1px solid var(--forge-steel);
+      background: var(--forge-panel);
+    }
+
+    .qty-btn {
+      width: 40px;
+      height: 40px;
+      background: transparent;
+      border: none;
+      color: var(--forge-chrome);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+    }
+    .qty-btn:hover { background: var(--forge-orange); color: var(--forge-black); }
+
+    .qty-input {
+      width: 56px;
+      height: 40px;
+      background: transparent;
+      border: none;
+      border-left: 1px solid var(--forge-steel);
+      border-right: 1px solid var(--forge-steel);
+      color: var(--forge-chrome);
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.2rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .qty-promo {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--forge-dim);
+      line-height: 1.5;
+      letter-spacing: 0.05em;
+    }
+
+    .qty-promo strong {
+      color: var(--forge-orange);
+      display: block;
+    }
+
+    .price-total-display {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.1rem;
+      color: var(--forge-amber);
+      letter-spacing: 0.06em;
+      margin-top: 0.5rem;
+      min-height: 1.5em;
+      transition: all 0.2s;
+    }
+
+    /* ── CTA ── */
+    .cta-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-buy {
+      flex: 1;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.2rem;
+      letter-spacing: 0.12em;
+      padding: 1rem 1.5rem;
+      background: var(--forge-orange);
+      color: var(--forge-black);
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-buy:hover:not(:disabled) { background: var(--forge-amber); transform: translateY(-2px); }
+    .btn-buy:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-contact-alt {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 1rem 1.2rem;
+      border: 1.5px solid var(--forge-steel);
+      background: transparent;
+      color: var(--forge-silver);
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .btn-contact-alt:hover { border-color: var(--forge-orange); color: var(--forge-orange); }
+
+    /* ── REASSURANCE ── */
+    .reassurance {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+    }
+
+    .reass-item {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      padding: 0.8rem;
+      text-align: center;
+    }
+
+    .reass-icon { font-size: 1.3rem; margin-bottom: 0.3rem; }
+
+    .reass-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+    }
+
+    /* ── TABS ── */
+    .tabs { margin-top: 0.5rem; }
+
+    .tab-nav {
+      display: flex;
+      border-bottom: 1px solid var(--forge-steel);
+      margin-bottom: 1.5rem;
+      gap: 0;
+    }
+
+    .tab-btn {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.7rem 1.2rem;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--forge-dim);
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      margin-bottom: -1px;
+    }
+
+    .tab-btn.active {
+      color: var(--forge-orange);
+      border-bottom-color: var(--forge-orange);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .tab-text {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: var(--forge-silver);
+    }
+
+    .spec-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .spec-table tr { border-bottom: 1px solid var(--forge-steel); }
+    .spec-table td {
+      padding: 0.7rem 0.5rem;
+      font-size: 0.9rem;
+    }
+    .spec-table td:first-child {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--forge-dim);
+      width: 40%;
+    }
+    .spec-table td:last-child { color: var(--forge-chrome); font-weight: 500; }
+
+    .faq-item { margin-bottom: 1rem; }
+    .faq-q {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--forge-chrome);
+      margin-bottom: 0.3rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--forge-steel);
+    }
+    .faq-q span { color: var(--forge-orange); font-size: 1.1rem; transition: transform 0.2s; }
+    .faq-q.open span { transform: rotate(45deg); }
+    .faq-a {
+      font-size: 0.9rem;
+      color: var(--forge-silver);
+      line-height: 1.7;
+      padding: 0.6rem 0;
+      display: none;
+    }
+    .faq-a.open { display: block; }
+
+    /* ── RELATED / UP-SELL ── */
+    .upsell {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      border-left: 3px solid var(--forge-orange);
+    }
+
+    .upsell-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      color: var(--forge-orange);
+      margin-bottom: 0.4rem;
+    }
+
+    .upsell-text {
+      font-size: 0.85rem;
+      color: var(--forge-silver);
+      line-height: 1.5;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--forge-panel);
+      border-top: 1px solid var(--forge-steel);
+      padding: 1.5rem 6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.2rem;
+      color: var(--forge-silver);
+      letter-spacing: 0.08em;
+    }
+    .footer-logo span { color: var(--forge-orange); }
+    .footer-copy {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--forge-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.2rem; }
+      .breadcrumb { padding: 5rem 1.5rem 0; }
+      .product-page { grid-template-columns: 1fr; padding: 1.5rem 1.5rem 4rem; gap: 2rem; }
+      .gallery { position: static; }
+      .reassurance { grid-template-columns: 1fr 1fr; }
+      footer { padding: 1.5rem; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">PRINT<span>FORGE</span>13</a>
+  <a class="nav-back" href="index.html#boutique">← Boutique</a>
+</nav>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="index.html">Accueil</a>
+  <span>/</span>
+  <a href="index.html#boutique">Boutique</a>
+  <span>/</span>
+  Porte-Médailles Sport
+</div>
+
+<!-- MAIN -->
+<div class="product-page">
+
+  <!-- GALLERY -->
+  <div class="gallery">
+    <div class="gallery-main" id="mainImg">
+      <div class="gallery-badge">NOUVEAU</div>
+      <!-- Remplace par <img src="images/medal-rack-1.jpg" alt="Porte-Médailles Sport"/> -->
+      <span>🏅</span>
+    </div>
+    <div class="gallery-thumbs">
+      <div class="thumb active" onclick="setThumb(this, 0)"><span>🏅</span></div>
+      <div class="thumb" onclick="setThumb(this, 1)"><span>📐</span></div>
+      <div class="thumb" onclick="setThumb(this, 2)"><span>🔩</span></div>
+      <div class="thumb" onclick="setThumb(this, 3)"><span>🏃</span></div>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="product-info">
+    <div class="product-tag">Accessoire Sport · Impression 3D PLA+</div>
+    <h1 class="product-title">Porte-Médailles<br/>Sport</h1>
+
+    <div class="product-price-block">
+      <div class="price-main" id="displayPrice">24,90</div>
+      <div class="price-unit">€ TTC · Unité</div>
+      <div class="price-multi" id="multiPriceHint"></div>
+    </div>
+
+    <p class="short-desc">
+      Support mural imprimé en 3D pour exposer vos médailles de trail, course à pied, CrossFit, Hyrox ou tout autre sport. Livré avec crochets — ajoutez autant de modules que vous souhaitez.
+    </p>
+
+    <div class="specs-row">
+      <div class="spec-pill">PLA+ haute résistance</div>
+      <div class="spec-pill">Fixation murale incluse</div>
+      <div class="spec-pill">10+ médailles</div>
+      <div class="spec-pill">Modulable</div>
+      <div class="spec-pill">Imprimé à Marseille</div>
+    </div>
+
+    <!-- UPSELL -->
+    <div class="upsell">
+      <div class="upsell-title">💡 Conseil du Forge</div>
+      <div class="upsell-text">Les modules s'emboîtent entre eux — commandez-en plusieurs pour créer un mur de médailles complet. À partir de 3 unités, livraison offerte en point relais.</div>
+    </div>
+
+    <!-- COLOR PICKER -->
+    <div class="picker-section">
+      <div class="picker-label">
+        // Couleur du filament
+        <span class="picker-label-selected" id="colorSelected">Noir Forgé</span>
+      </div>
+      <div class="swatches" id="swatchContainer"></div>
+    </div>
+
+    <!-- QUANTITY -->
+    <div class="qty-section">
+      <div class="qty-label">// Quantité</div>
+      <div class="qty-row">
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(-1)">−</button>
+          <input class="qty-input" type="number" id="qtyInput" value="1" min="1" max="99" oninput="onQtyInput()"/>
+          <button class="qty-btn" onclick="changeQty(1)">+</button>
+        </div>
+        <div class="qty-promo">
+          <strong id="qtyPromoMsg"></strong>
+          <span id="qtyShippingMsg"></span>
+        </div>
+      </div>
+      <div class="price-total-display" id="totalDisplay"></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-row">
+      <button class="btn-buy" id="buyBtn" onclick="checkout()">
+        Commander → Paiement sécurisé
+      </button>
+      <a href="index.html#contact" class="btn-contact-alt">Question ?</a>
+    </div>
+
+    <!-- REASSURANCE -->
+    <div class="reassurance">
+      <div class="reass-item">
+        <div class="reass-icon">🔒</div>
+        <div class="reass-label">Paiement<br/>sécurisé Stripe</div>
+      </div>
+      <div class="reass-item">
+        <div class="reass-icon">📦</div>
+        <div class="reass-label">Expédition<br/>5–10 jours</div>
+      </div>
+      <div class="reass-item">
+        <div class="reass-icon">✉️</div>
+        <div class="reass-label">Support<br/>sous 48h</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="setTab(this,'desc')">Description</button>
+        <button class="tab-btn" onclick="setTab(this,'specs')">Caractéristiques</button>
+        <button class="tab-btn" onclick="setTab(this,'faq')">FAQ</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-desc">
+        <p class="tab-text">
+          Le Porte-Médailles PrintForge13 est conçu pour les sportifs qui méritent que leurs efforts soient exposés fièrement. Finies les médailles entassées dans un tiroir.<br/><br/>
+          Chaque module s'accroche au mur via deux vis discrètes (gabarit de perçage inclus). Les crochets fournis permettent de suspendre facilement les rubans de médailles. Le système modulaire permet d'ajouter des unités au fur et à mesure de vos courses et compétitions.<br/><br/>
+          Imprimé à la commande dans notre atelier à Marseille, en PLA+ haute résistance, pour une durabilité optimale. La couleur est choisie par vos soins au moment de la commande.
+        </p>
+      </div>
+
+      <div class="tab-panel" id="tab-specs">
+        <table class="spec-table">
+          <tr><td>Matériau</td><td>PLA+ haute résistance</td></tr>
+          <tr><td>Dimensions</td><td>30 × 8 × 4 cm (par module)</td></tr>
+          <tr><td>Poids</td><td>~80g</td></tr>
+          <tr><td>Capacité</td><td>10+ médailles par module</td></tr>
+          <tr><td>Fixation</td><td>2 vis + chevilles (fournies)</td></tr>
+          <tr><td>Crochets</td><td>Inclus (quantité adaptée)</td></tr>
+          <tr><td>Modulable</td><td>Oui — emboîtement latéral</td></tr>
+          <tr><td>Couleurs disponibles</td><td>10 coloris</td></tr>
+          <tr><td>Délai fabrication</td><td>3 à 5 jours ouvrés</td></tr>
+          <tr><td>Expédition</td><td>France, Belgique, Suisse, Luxembourg, Monaco</td></tr>
+          <tr><td>Fabrication</td><td>Marseille, France 🇫🇷</td></tr>
+        </table>
+      </div>
+
+      <div class="tab-panel" id="tab-faq">
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Comment fixer le support au mur ? <span>+</span></div>
+          <div class="faq-a">Deux vis suffisent. Un gabarit de perçage est fourni dans le colis pour un placement parfait. La fixation est compatible avec les murs en placo, béton et brique (avec chevilles adaptées, également fournies).</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Peut-on commander plusieurs modules de couleurs différentes ? <span>+</span></div>
+          <div class="faq-a">Oui ! Passez autant de commandes séparées que vous le souhaitez, en choisissant une couleur différente à chaque fois. Nous pouvons aussi vous contacter par e-mail pour grouper vos modules dans un seul envoi.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Le PLA+ résiste-t-il à l'humidité ? <span>+</span></div>
+          <div class="faq-a">Le PLA+ est résistant à l'humidité ambiante. Pour une utilisation en intérieur (salon, bureau, chambre), il n'y a aucun problème. Nous déconseillons toutefois une installation en extérieur ou en milieu très humide.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Délais de livraison ? <span>+</span></div>
+          <div class="faq-a">Chaque pièce est imprimée à la commande : comptez 3 à 5 jours ouvrés de fabrication, puis 2 à 5 jours de livraison Colissimo. Total estimé : 5 à 10 jours ouvrés. Vous recevez un numéro de suivi dès l'expédition.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">Puis-je commander une couleur personnalisée ? <span>+</span></div>
+          <div class="faq-a">Si votre couleur n'est pas dans la liste, contactez-nous via le formulaire — on étudie chaque demande. Certaines teintes spéciales (métallisées, fluorescentes) sont disponibles sur devis.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /product-info -->
+</div><!-- /product-page -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">PRINT<span>FORGE</span>13</div>
+  <div class="footer-copy">© 2025 PrintForge13 — Marseille</div>
+</footer>
+
+<script>
+// ── DATA ──
+const UNIT_PRICE = 24.90;
+const PRODUCT_ID = 'medal-rack';
+
+const COLORS = [
+  { name: 'Noir Forgé',     hex: '#1a1a1a' },
+  { name: 'Gris Acier',     hex: '#6b7280' },
+  { name: 'Blanc Arctique', hex: '#f0f0f0' },
+  { name: 'Rouge Ember',    hex: '#dc2626' },
+  { name: 'Orange Forge',   hex: '#ff6b1a' },
+  { name: 'Bleu Cobalt',    hex: '#2563eb' },
+  { name: 'Vert Army',      hex: '#4a7c59' },
+  { name: 'Or Métallisé',   hex: '#d97706' },
+  { name: 'Bronze',         hex: '#a0522d' },
+  { name: 'Violet Neon',    hex: '#7c3aed' },
+];
+
+// Paliers de promotion (déclenchés à l'affichage uniquement, pas de remise Stripe ici)
+const PROMO_TIERS = [
+  { min: 3, msg: '🎉 Livraison offerte en point relais à partir de 3 unités !' },
+  { min: 5, msg: '🔥 Pack 5 modules — contactez-nous pour une offre groupée !' },
+];
+
+// Galerie (placeholders — remplace par les vraies images)
+const THUMBS_CONTENT = [
+  '<span>🏅</span>',
+  '<span>📐</span>',
+  '<span>🔩</span>',
+  '<span>🏃</span>',
+];
+
+let selectedColor = COLORS[0].name;
+let currentQty = 1;
+
+// ── INIT SWATCHES ──
+function initSwatches() {
+  const container = document.getElementById('swatchContainer');
+  container.innerHTML = COLORS.map((c, i) => `
+    <div class="swatch ${i===0?'active':''}"
+         style="background:${c.hex};${c.hex==='#f0f0f0'?'border:2px solid #555;':''}"
+         onclick="pickColor(this,'${c.name}')"
+         title="${c.name}">
+      <span class="swatch-tooltip">${c.name}</span>
+    </div>
+  `).join('');
+}
+
+function pickColor(el, name) {
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  selectedColor = name;
+  document.getElementById('colorSelected').textContent = name;
+}
+
+// ── QUANTITY ──
+function changeQty(delta) {
+  const input = document.getElementById('qtyInput');
+  const v = Math.max(1, Math.min(99, parseInt(input.value || 1) + delta));
+  input.value = v;
+  currentQty = v;
+  updateQtyUI();
+}
+
+function onQtyInput() {
+  const input = document.getElementById('qtyInput');
+  let v = parseInt(input.value);
+  if (isNaN(v) || v < 1) v = 1;
+  if (v > 99) v = 99;
+  currentQty = v;
+  updateQtyUI();
+}
+
+function updateQtyUI() {
+  const total = (UNIT_PRICE * currentQty).toFixed(2).replace('.', ',');
+
+  // Total
+  if (currentQty > 1) {
+    document.getElementById('totalDisplay').textContent = `Total : ${total} € TTC pour ${currentQty} modules`;
+    document.getElementById('multiPriceHint').textContent = `× ${currentQty}`;
+  } else {
+    document.getElementById('totalDisplay').textContent = '';
+    document.getElementById('multiPriceHint').textContent = '';
+  }
+
+  // Promo messages
+  const promo = [...PROMO_TIERS].reverse().find(t => currentQty >= t.min);
+  const promoEl = document.getElementById('qtyPromoMsg');
+  const shipEl  = document.getElementById('qtyShippingMsg');
+  if (promo) {
+    promoEl.textContent = promo.msg;
+    shipEl.textContent = '';
+  } else {
+    promoEl.textContent = '';
+    const next = PROMO_TIERS.find(t => currentQty < t.min);
+    shipEl.textContent = next ? `Encore ${next.min - currentQty} pour : ${next.msg}` : '';
+  }
+}
+
+// ── GALLERY ──
+function setThumb(el, idx) {
+  document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const main = document.getElementById('mainImg');
+  // Remplace le contenu du main par la miniature correspondante
+  // Quand tu auras des vraies images :
+  // main.innerHTML = `<div class="gallery-badge">NOUVEAU</div><img src="images/medal-rack-${idx+1}.jpg" alt="Vue ${idx+1}"/>`;
+  main.innerHTML = `<div class="gallery-badge">NOUVEAU</div>${THUMBS_CONTENT[idx]}`;
+}
+
+// ── TABS ──
+function setTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+}
+
+// ── FAQ ──
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const isOpen = answer.classList.contains('open');
+  // Ferme tous
+  document.querySelectorAll('.faq-q').forEach(q => {
+    q.classList.remove('open');
+    q.nextElementSibling.classList.remove('open');
+  });
+  if (!isOpen) {
+    el.classList.add('open');
+    answer.classList.add('open');
+  }
+}
+
+// ── CHECKOUT ──
+async function checkout() {
+  const btn = document.getElementById('buyBtn');
+  btn.textContent = '⏳ Redirection…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/.netlify/functions/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productId: PRODUCT_ID,
+        color: selectedColor,
+        quantity: currentQty,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+    window.location.href = data.url;
+
+  } catch (err) {
+    console.error(err);
+    alert(`Erreur : ${err.message}\nContacte-nous à Printforge13@gmail.com`);
+    btn.textContent = 'Commander → Paiement sécurisé';
+    btn.disabled = false;
+  }
+}
+
+// ── INIT ──
+initSwatches();
+updateQtyUI();
+</script>
+</body>
+</html>
