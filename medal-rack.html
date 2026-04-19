@@ -626,14 +626,14 @@
   <div class="gallery">
     <div class="gallery-main" id="mainImg">
       <div class="gallery-badge">NOUVEAU</div>
-      <!-- Remplace par <img src="images/medal-rack-1.jpg" alt="Porte-Médailles Sport"/> -->
-      <span>🏅</span>
+      <img src="images/medal-rack-1.jpg" alt="Porte-Médailles Sport"/> 
+      <!-- Remplace par <span>🏅</span>-->
     </div>
     <div class="gallery-thumbs">
-      <div class="thumb active" onclick="setThumb(this, 0)"><span>🏅</span></div>
-      <div class="thumb" onclick="setThumb(this, 1)"><span>📐</span></div>
-      <div class="thumb" onclick="setThumb(this, 2)"><span>🔩</span></div>
-      <div class="thumb" onclick="setThumb(this, 3)"><span>🏃</span></div>
+      <div class="thumb active" onclick="setThumb(this, 0)"><img src="images/medal-rack-1.jpg" alt="Porte-Médailles Sport"/></div>
+      <div class="thumb" onclick="setThumb(this, 1)"><img src="images/medal-rack-2.jpg" alt="Porte-Médailles Sport"/></div>
+      <div class="thumb" onclick="setThumb(this, 2)"><img src="images/medal-rack-3.jpg" alt="Porte-Médailles Sport"/></div>
+      <div class="thumb" onclick="setThumb(this, 3)"><img src="images/medal-rack-4.jpg" alt="Porte-Médailles Sport"/></div>
     </div>
   </div>
 
@@ -643,7 +643,7 @@
     <h1 class="product-title">Porte-Médailles<br/>Sport</h1>
 
     <div class="product-price-block">
-      <div class="price-main" id="displayPrice">24,90</div>
+      <div class="price-main" id="displayPrice">14,90</div>
       <div class="price-unit">€ TTC · Unité</div>
       <div class="price-multi" id="multiPriceHint"></div>
     </div>
@@ -808,10 +808,10 @@ const PROMO_TIERS = [
 
 // Galerie (placeholders — remplace par les vraies images)
 const THUMBS_CONTENT = [
-  '<span>🏅</span>',
-  '<span>📐</span>',
-  '<span>🔩</span>',
-  '<span>🏃</span>',
+  '<img src="images/medal-rack-1.jpg" alt="Porte-Médailles Sport"/>',
+  '<img src="images/medal-rack-2.jpg" alt="Porte-Médailles Sport"/>',
+  '<img src="images/medal-rack-3.jpg" alt="Porte-Médailles Sport"/>',
+  '<img src="images/medal-rack-4.jpg" alt="Porte-Médailles Sport"/>',
 ];
 
 let selectedColor = COLORS[0].name;
