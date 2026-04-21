@@ -82,6 +82,45 @@
     }
     .nav-back:hover { color: var(--forge-orange); }
 
+    /* ── CART ICON NAV ── */
+    .nav-cart {
+      font-family: 'Rajdhani', sans-serif; font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--forge-silver); text-decoration: none;
+      display: flex; align-items: center; gap: 0.5rem;
+      transition: color 0.2s; position: relative;
+    }
+    .nav-cart:hover { color: var(--forge-orange); }
+    .nav-cart-badge {
+      position: absolute; top: -6px; right: -8px;
+      background: var(--forge-orange); color: var(--forge-black);
+      font-size: 0.6rem; font-weight: 700; font-family: 'Rajdhani', sans-serif;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .nav-cart-badge.visible { opacity: 1; }
+
+    /* ── ADD TO CART NOTIFICATION ── */
+    .cart-toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--forge-panel); border: 1px solid var(--forge-orange);
+      color: var(--forge-chrome); padding: 0.9rem 1.5rem;
+      font-family: 'Rajdhani', sans-serif; font-size: 0.92rem; font-weight: 500;
+      z-index: 500; transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), opacity 0.3s;
+      opacity: 0; display: flex; align-items: center; gap: 1rem;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+      white-space: nowrap;
+    }
+    .cart-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    .cart-toast-icon { font-size: 1.1rem; }
+    .cart-toast a {
+      color: var(--forge-orange); text-decoration: none; font-weight: 700;
+      letter-spacing: 0.08em; font-size: 0.82rem; text-transform: uppercase;
+      border-left: 1px solid var(--forge-steel); padding-left: 1rem;
+    }
+    .cart-toast a:hover { color: var(--forge-amber); }
+
     /* ── BREADCRUMB ── */
     .breadcrumb {
       padding: 5rem 6rem 0;
@@ -607,7 +646,13 @@
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="index.html">PRINT<span>FORGE</span>13</a>
-  <a class="nav-back" href="index.html#boutique">← Boutique</a>
+  <div style="display:flex;align-items:center;gap:1.5rem;">
+    <a class="nav-cart" href="panier.html" id="navCart">
+      🛒 Panier
+      <span class="nav-cart-badge" id="navCartBadge">0</span>
+    </a>
+    <a class="nav-back" href="index.html#boutique">← Boutique</a>
+  </div>
 </nav>
 
 <!-- BREADCRUMB -->
@@ -693,8 +738,8 @@
 
     <!-- CTA -->
     <div class="cta-row">
-      <button class="btn-buy" id="buyBtn" onclick="checkout()">
-        Commander → Paiement sécurisé
+      <button class="btn-buy" id="buyBtn" onclick="addToCart()">
+        + Ajouter au panier
       </button>
       <a href="mailto:Printforge13@gmail.com?subject=Question%20-%20Porte-M%C3%A9dailles%20Sport" class="btn-contact-alt">Question ?</a>
     </div>
@@ -727,7 +772,6 @@
         <p class="tab-text">
           Le Porte-Médailles PrintForge13 est conçu pour les sportifs qui méritent que leurs efforts soient exposés fièrement. Finies les médailles entassées dans un tiroir.<br/><br/>
           Chaque module s'accroche au mur via deux vis discrètes (gabarit de perçage inclus). Les crochets fournis permettent de suspendre facilement les rubans de médailles. Le système modulaire permet d'ajouter des unités au fur et à mesure de vos courses et compétitions.<br/><br/>
-          Les deux parties sont aimantées pour une emboitement rapide et efficace.<br/><br/>
           Imprimé à la commande dans notre atelier à Marseille, en PLA+ haute résistance, pour une durabilité optimale. La couleur est choisie par vos soins au moment de la commande.
         </p>
       </div>
@@ -782,7 +826,7 @@
 
 <script>
 // ── DATA ──
-const UNIT_PRICE = 14.90;
+const UNIT_PRICE = 24.90;
 const PRODUCT_ID = 'medal-rack';
 
 const COLORS = [
@@ -916,38 +960,71 @@ function toggleFaq(el) {
   }
 }
 
-// ── CHECKOUT ──
-async function checkout() {
-  const btn = document.getElementById('buyBtn');
-  btn.textContent = '⏳ Redirection…';
-  btn.disabled = true;
+// ── CART HELPERS ──
+function getCart() {
+  try { return JSON.parse(localStorage.getItem('pf13_cart') || '[]'); } catch { return []; }
+}
+function saveCart(cart) { localStorage.setItem('pf13_cart', JSON.stringify(cart)); }
 
-  try {
-    const res = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        productId: PRODUCT_ID,
-        color: selectedColor,
-        quantity: currentQty,
-      }),
+function updateNavBadge() {
+  const cart = getCart();
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('navCartBadge');
+  if (!badge) return;
+  badge.textContent = total;
+  badge.classList.toggle('visible', total > 0);
+}
+
+// ── ADD TO CART ──
+function addToCart() {
+  const cart = getCart();
+  const colorData = COLORS.find(c => c.name === selectedColor) || COLORS[0];
+
+  // Cherche si même produit + même couleur déjà dans le panier
+  const existing = cart.find(i => i.productId === PRODUCT_ID && i.color === selectedColor);
+  if (existing) {
+    existing.qty = Math.min(99, existing.qty + currentQty);
+  } else {
+    cart.push({
+      productId: PRODUCT_ID,
+      name: 'Porte-Médailles Sport',
+      color: selectedColor,
+      colorHex: colorData.hex,
+      qty: currentQty,
+      price: UNIT_PRICE,
     });
-
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
-    window.location.href = data.url;
-
-  } catch (err) {
-    console.error(err);
-    alert(`Erreur : ${err.message}\nContacte-nous à Printforge13@gmail.com`);
-    btn.textContent = 'Commander → Paiement sécurisé';
-    btn.disabled = false;
   }
+  saveCart(cart);
+  updateNavBadge();
+  showToast();
+}
+
+// ── TOAST ──
+let toastTimer = null;
+function showToast() {
+  const toast = document.getElementById('cartToast');
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ── CHECKOUT (conservé pour usage futur direct) ──
+async function checkout() {
+  window.location.href = 'panier.html';
 }
 
 // ── INIT ──
 initSwatches();
 updateQtyUI();
+updateNavBadge();
 </script>
+
+<!-- TOAST NOTIFICATION -->
+<div class="cart-toast" id="cartToast">
+  <span class="cart-toast-icon">✓</span>
+  Ajouté au panier !
+  <a href="panier.html">Voir le panier →</a>
+</div>
+
 </body>
 </html>

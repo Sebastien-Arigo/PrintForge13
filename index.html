@@ -122,6 +122,26 @@
     .nav-cta::after { display: none !important; }
     .nav-cta:hover { background: var(--forge-amber) !important; color: var(--forge-black) !important; }
 
+    /* ── CART ICON NAV ── */
+    .nav-cart {
+      font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--forge-silver); text-decoration: none;
+      display: flex; align-items: center; gap: 0.4rem;
+      transition: color 0.2s; position: relative;
+    }
+    .nav-cart:hover { color: var(--forge-orange); }
+    .nav-cart::after { display: none !important; }
+    .nav-cart-badge {
+      position: absolute; top: -6px; right: -10px;
+      background: var(--forge-orange); color: var(--forge-black);
+      font-size: 0.6rem; font-weight: 700; font-family: 'Rajdhani', sans-serif;
+      width: 16px; height: 16px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .nav-cart-badge.visible { opacity: 1; }
+
     /* ── HERO ── */
     .hero {
       min-height: 100vh;
@@ -979,6 +999,12 @@
     <li><a href="#book">Réalisations</a></li>
     <li><a href="#boutique">Boutique</a></li>
     <li><a href="#social">Réseaux</a></li>
+    <li>
+      <a href="panier.html" class="nav-cart" id="navCart">
+        🛒 Panier
+        <span class="nav-cart-badge" id="navCartBadge">0</span>
+      </a>
+    </li>
     <li><a href="#contact" class="nav-cta">Commande</a></li>
   </ul>
 </nav>
@@ -1043,7 +1069,7 @@
   <div class="about-visual reveal">
     <div class="about-logo-frame">
       <!-- <div class="about-logo-placeholder"></div> -->
-      <img src="images/Logo.png">
+      <img src="Logo.png">
     </div>
   </div>
 </section>
@@ -1200,7 +1226,7 @@ const PRODUCTS = [
     desc: 'Support mural pour accrocher vos médailles de trail, course à pied, CrossFit, Hyrox ou tout autre sport. Fixation discrète au mur. Vendu avec crochets afin de rajouter autant de module que vous souhaitez.',
     price: 24.90,
     badge: 'NOUVEAU',
-    image: 'images/medal-rack-1.jpg',
+    emoji: '🏅',
     category: 'sport',
     availableColors: COLORS,
   }
@@ -1247,7 +1273,7 @@ function renderProducts() {
     <div class="product-card" id="card-${p.id}" onclick="window.location.href='${p.id}.html'" style="cursor:pointer;">
       <div class="product-img" style="position:relative;">
         <div class="product-badge">${p.badge}</div>
-        <img src=${p.image}>
+        <span style="font-size:5rem;position:relative;z-index:1;">${p.emoji}</span>
         <div class="prod-hover-overlay">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,107,26,0.95)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
@@ -1341,9 +1367,22 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.1 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// ── CART BADGE ──
+function updateNavBadge() {
+  try {
+    const cart = JSON.parse(localStorage.getItem('pf13_cart') || '[]');
+    const total = cart.reduce((s, i) => s + i.qty, 0);
+    const badge = document.getElementById('navCartBadge');
+    if (!badge) return;
+    badge.textContent = total;
+    badge.classList.toggle('visible', total > 0);
+  } catch {}
+}
+
 // ── INIT ──
 renderBook();
 renderProducts();
+updateNavBadge();
 </script>
 </body>
 </html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mon Panier – PrintForge13</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --forge-black: #0a0a0b;
+      --forge-dark: #111114;
+      --forge-panel: #18181d;
+      --forge-steel: #2a2a35;
+      --forge-orange: #ff6b1a;
+      --forge-amber: #ffaa00;
+      --forge-chrome: #c8cdd6;
+      --forge-silver: #8a909e;
+      --forge-dim: #4a4d5a;
+      --forge-green: #22c55e;
+      --text: #e8eaf0;
+      --shipping-threshold: 5000; /* 50€ en centimes */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    img { max-width: 100%; height: auto; display: block; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--forge-black);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9999; mix-blend-mode: overlay;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 3rem; height: 64px;
+      background: rgba(10,10,11,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,107,26,0.15);
+    }
+    .nav-logo { font-family: 'Bebas Neue', cursive; font-size: 1.6rem; letter-spacing: 0.08em; color: var(--forge-chrome); text-decoration: none; }
+    .nav-logo span { color: var(--forge-orange); }
+    .nav-back { font-family: 'Rajdhani', sans-serif; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--forge-silver); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; transition: color 0.2s; }
+    .nav-back:hover { color: var(--forge-orange); }
+
+    /* ── PAGE ── */
+    .page {
+      padding: 5rem 6rem 6rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      display: flex; align-items: baseline; gap: 1rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--forge-steel);
+    }
+
+    .page-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.5rem;
+      letter-spacing: 0.06em;
+      color: var(--forge-chrome);
+    }
+
+    .cart-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--forge-orange);
+    }
+
+    /* ── LAYOUT ── */
+    .cart-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── CART ITEMS ── */
+    .cart-items { display: flex; flex-direction: column; gap: 1rem; }
+
+    .cart-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--forge-panel);
+      border: 1px dashed var(--forge-steel);
+    }
+    .cart-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .cart-empty-title { font-family: 'Bebas Neue', cursive; font-size: 1.5rem; color: var(--forge-silver); margin-bottom: 0.5rem; letter-spacing: 0.06em; }
+    .cart-empty-sub { font-size: 0.88rem; color: var(--forge-dim); margin-bottom: 1.5rem; }
+    .btn-continue {
+      display: inline-block;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1rem; letter-spacing: 0.12em;
+      padding: 0.7rem 2rem;
+      background: var(--forge-orange); color: var(--forge-black);
+      text-decoration: none;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+
+    .cart-item {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      display: grid;
+      grid-template-columns: 80px 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      padding: 1rem;
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      transition: border-color 0.2s;
+    }
+    .cart-item:hover { border-color: rgba(255,107,26,0.3); }
+
+    .cart-item-img {
+      width: 80px; height: 80px;
+      background: var(--forge-steel);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; overflow: hidden; flex-shrink: 0;
+    }
+    .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    .cart-item-info { min-width: 0; }
+
+    .cart-item-name {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.1rem; letter-spacing: 0.06em;
+      color: var(--forge-chrome); margin-bottom: 0.3rem;
+    }
+
+    .cart-item-color {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.1em; color: var(--forge-silver);
+      margin-bottom: 0.5rem;
+    }
+
+    .color-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.2); flex-shrink: 0;
+    }
+
+    .cart-item-qty {
+      display: flex; align-items: center;
+      border: 1px solid var(--forge-steel);
+      background: var(--forge-black);
+      width: fit-content;
+    }
+
+    .qty-btn {
+      width: 28px; height: 28px;
+      background: transparent; border: none;
+      color: var(--forge-chrome); font-size: 1rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      transition: background 0.15s, color 0.15s;
+    }
+    .qty-btn:hover { background: var(--forge-orange); color: var(--forge-black); }
+
+    .qty-val {
+      width: 36px; height: 28px;
+      background: transparent;
+      border: none; border-left: 1px solid var(--forge-steel); border-right: 1px solid var(--forge-steel);
+      color: var(--forge-chrome);
+      font-family: 'Bebas Neue', cursive; font-size: 1rem; letter-spacing: 0.08em;
+      text-align: center; outline: none;
+      -moz-appearance: textfield;
+    }
+    .qty-val::-webkit-outer-spin-button, .qty-val::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    .cart-item-right {
+      display: flex; flex-direction: column;
+      align-items: flex-end; gap: 0.6rem; flex-shrink: 0;
+    }
+
+    .cart-item-price {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.3rem; color: var(--forge-orange); letter-spacing: 0.04em;
+    }
+
+    .btn-remove {
+      background: transparent; border: none;
+      color: var(--forge-dim); cursor: pointer;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.1em;
+      transition: color 0.2s;
+    }
+    .btn-remove:hover { color: #ef4444; }
+
+    /* ── SUMMARY ── */
+    .cart-summary {
+      background: var(--forge-panel);
+      border: 1px solid var(--forge-steel);
+      padding: 1.5rem;
+      position: sticky; top: 80px;
+      clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+    }
+
+    .summary-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.2rem; letter-spacing: 0.08em;
+      color: var(--forge-chrome); margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--forge-steel);
+    }
+
+    .summary-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 0.7rem;
+      font-size: 0.9rem; color: var(--forge-silver);
+    }
+
+    .summary-row.total {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.5rem; color: var(--forge-chrome);
+      letter-spacing: 0.04em;
+      margin-top: 1rem; padding-top: 1rem;
+      border-top: 1px solid var(--forge-steel);
+    }
+
+    .summary-shipping {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.7rem; color: var(--forge-green);
+      letter-spacing: 0.05em;
+    }
+
+    .summary-shipping.paid { color: var(--forge-silver); }
+
+    /* ── SHIPPING PROGRESS ── */
+    .shipping-progress {
+      background: var(--forge-black);
+      border: 1px solid var(--forge-steel);
+      padding: 0.9rem 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .shipping-progress-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.1em;
+      color: var(--forge-silver); margin-bottom: 0.5rem;
+      display: flex; justify-content: space-between;
+    }
+
+    .shipping-progress-label span { color: var(--forge-orange); }
+
+    .progress-bar-bg {
+      background: var(--forge-steel);
+      height: 4px; border-radius: 2px; overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%; background: var(--forge-orange);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-bar-fill.complete { background: var(--forge-green); }
+
+    .shipping-unlocked {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.68rem; color: var(--forge-green);
+      letter-spacing: 0.08em; margin-top: 0.5rem;
+    }
+
+    /* ── CTA ── */
+    .btn-checkout {
+      width: 100%;
+      font-family: 'Bebas Neue', cursive;
+      font-size: 1.2rem; letter-spacing: 0.12em;
+      padding: 1rem;
+      background: var(--forge-orange); color: var(--forge-black);
+      border: none; cursor: pointer;
+      clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 1rem;
+    }
+    .btn-checkout:hover:not(:disabled) { background: var(--forge-amber); transform: translateY(-2px); }
+    .btn-checkout:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-continue-shopping {
+      display: block; text-align: center; margin-top: 0.8rem;
+      font-family: 'Rajdhani', sans-serif; font-size: 0.82rem;
+      font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--forge-dim); text-decoration: none;
+      transition: color 0.2s;
+    }
+    .btn-continue-shopping:hover { color: var(--forge-orange); }
+
+    .summary-secure {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.4rem; margin-top: 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.62rem; color: var(--forge-dim); letter-spacing: 0.08em;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--forge-panel);
+      border-top: 1px solid var(--forge-steel);
+      padding: 1.5rem 6rem;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem; margin-top: 4rem;
+    }
+    .footer-logo { font-family: 'Bebas Neue', cursive; font-size: 1.2rem; color: var(--forge-silver); letter-spacing: 0.08em; }
+    .footer-logo span { color: var(--forge-orange); }
+    .footer-copy { font-family: 'Share Tech Mono', monospace; font-size: 0.68rem; color: var(--forge-dim); letter-spacing: 0.1em; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav { padding: 0 1.2rem; }
+      .page { padding: 5rem 1.5rem 4rem; }
+      .cart-layout { grid-template-columns: 1fr; }
+      .cart-summary { position: static; }
+      footer { padding: 1.5rem; flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">PRINT<span>FORGE</span>13</a>
+  <a class="nav-back" href="index.html#boutique">← Boutique</a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">Mon Panier</h1>
+    <span class="cart-count" id="cartCount"></span>
+  </div>
+
+  <div class="cart-layout">
+    <!-- ITEMS -->
+    <div class="cart-items" id="cartItems"></div>
+
+    <!-- SUMMARY -->
+    <div class="cart-summary" id="cartSummary">
+      <div class="summary-title">// Récapitulatif</div>
+
+      <!-- Barre de progression FDP -->
+      <div class="shipping-progress" id="shippingProgress">
+        <div class="shipping-progress-label">
+          <span>Livraison offerte dès 50,00 €</span>
+          <span id="progressLabel"></span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+        </div>
+        <div class="shipping-unlocked" id="shippingUnlocked" style="display:none;">
+          ✓ Livraison offerte débloquée !
+        </div>
+      </div>
+
+      <div class="summary-row">
+        <span>Sous-total</span>
+        <span id="summarySubtotal">—</span>
+      </div>
+      <div class="summary-row">
+        <span>Livraison</span>
+        <span id="summaryShipping" class="summary-shipping paid">—</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span id="summaryTotal">—</span>
+      </div>
+
+      <button class="btn-checkout" id="checkoutBtn" onclick="checkout()" disabled>
+        Payer → Paiement sécurisé
+      </button>
+      <a href="index.html#boutique" class="btn-continue-shopping">← Continuer mes achats</a>
+      <div class="summary-secure">🔒 Paiement sécurisé par Stripe</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">PRINT<span>FORGE</span>13</div>
+  <div class="footer-copy">© 2025 PrintForge13 — Marseille</div>
+</footer>
+
+<script>
+// ── CONFIG ──
+const SHIPPING_THRESHOLD = 50.00; // FDP offerts à partir de ce montant
+const SHIPPING_COST      = 4.90;
+
+// Catalogue local (prix de référence pour l'affichage)
+// ⚠️ Doit correspondre à api/checkout.js
+const CATALOG = {
+  'medal-rack': { name: 'Porte-Médailles Sport', price: 14.90, image: 'images/medal-rack-1.jpg', emoji: '🏅' },
+};
+
+// ── CART HELPERS ──
+function getCart() {
+  try { return JSON.parse(localStorage.getItem('pf13_cart') || '[]'); } catch { return []; }
+}
+
+function saveCart(cart) {
+  localStorage.setItem('pf13_cart', JSON.stringify(cart));
+}
+
+function cartTotal(cart) {
+  return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+}
+
+// ── RENDER ──
+function render() {
+  const cart = getCart();
+  const total = cartTotal(cart);
+  const freeShipping = total >= SHIPPING_THRESHOLD;
+  const shipping = freeShipping ? 0 : (cart.length > 0 ? SHIPPING_COST : 0);
+  const grandTotal = total + shipping;
+
+  // Count
+  const totalQty = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cartCount').textContent =
+    totalQty > 0 ? `${totalQty} article${totalQty > 1 ? 's' : ''}` : '';
+
+  // Progress bar
+  const pct = Math.min(100, (total / SHIPPING_THRESHOLD) * 100);
+  const bar = document.getElementById('progressBar');
+  bar.style.width = pct + '%';
+  bar.className = 'progress-bar-fill' + (freeShipping ? ' complete' : '');
+  document.getElementById('progressLabel').textContent =
+    freeShipping ? '✓ Offerte' : `${total.toFixed(2).replace('.', ',')} / 50,00 €`;
+  document.getElementById('shippingUnlocked').style.display = freeShipping ? 'flex' : 'none';
+
+  // Summary
+  document.getElementById('summarySubtotal').textContent =
+    total > 0 ? total.toFixed(2).replace('.', ',') + ' €' : '—';
+  const shippingEl = document.getElementById('summaryShipping');
+  if (cart.length === 0) {
+    shippingEl.textContent = '—';
+    shippingEl.className = 'summary-shipping paid';
+  } else if (freeShipping) {
+    shippingEl.textContent = 'OFFERTE ✓';
+    shippingEl.className = 'summary-shipping';
+  } else {
+    shippingEl.textContent = SHIPPING_COST.toFixed(2).replace('.', ',') + ' €';
+    shippingEl.className = 'summary-shipping paid';
+  }
+  document.getElementById('summaryTotal').textContent =
+    cart.length > 0 ? grandTotal.toFixed(2).replace('.', ',') + ' €' : '—';
+
+  // Checkout btn
+  document.getElementById('checkoutBtn').disabled = cart.length === 0;
+
+  // Items
+  const container = document.getElementById('cartItems');
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛒</div>
+        <div class="cart-empty-title">Votre panier est vide</div>
+        <div class="cart-empty-sub">Découvrez nos créations et ajoutez-en au panier.</div>
+        <a href="index.html#boutique" class="btn-continue">Voir la boutique</a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = cart.map((item, idx) => {
+    const prod = CATALOG[item.productId] || {};
+    const lineTotal = (item.price * item.qty).toFixed(2).replace('.', ',');
+    const imgContent = prod.image
+      ? `<img src="${prod.image}" alt="${item.name}"/>`
+      : `<span>${prod.emoji || '📦'}</span>`;
+    return `
+      <div class="cart-item">
+        <div class="cart-item-img">${imgContent}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-color">
+            <div class="color-dot" style="background:${item.colorHex};${item.colorHex==='#f0f0f0'?'border:1.5px solid #555;':''}"></div>
+            ${item.color}
+          </div>
+          <div class="cart-item-qty">
+            <button class="qty-btn" onclick="changeQty(${idx}, -1)">−</button>
+            <input class="qty-val" type="number" value="${item.qty}" min="1" max="99"
+                   onchange="setQty(${idx}, this.value)"/>
+            <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+          </div>
+        </div>
+        <div class="cart-item-right">
+          <div class="cart-item-price">${lineTotal} €</div>
+          <button class="btn-remove" onclick="removeItem(${idx})">✕ Retirer</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── ACTIONS ──
+function changeQty(idx, delta) {
+  const cart = getCart();
+  cart[idx].qty = Math.max(1, Math.min(99, cart[idx].qty + delta));
+  saveCart(cart);
+  render();
+}
+
+function setQty(idx, val) {
+  const cart = getCart();
+  let v = parseInt(val);
+  if (isNaN(v) || v < 1) v = 1;
+  if (v > 99) v = 99;
+  cart[idx].qty = v;
+  saveCart(cart);
+  render();
+}
+
+function removeItem(idx) {
+  const cart = getCart();
+  cart.splice(idx, 1);
+  saveCart(cart);
+  render();
+}
+
+// ── CHECKOUT ──
+async function checkout() {
+  const cart = getCart();
+  if (cart.length === 0) return;
+
+  const btn = document.getElementById('checkoutBtn');
+  btn.textContent = '⏳ Redirection…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur serveur');
+
+    // Vide le panier après redirection réussie
+    localStorage.removeItem('pf13_cart');
+    window.location.href = data.url;
+
+  } catch (err) {
+    console.error(err);
+    alert(`Erreur : ${err.message}\nContacte-nous à Printforge13@gmail.com`);
+    btn.textContent = 'Payer → Paiement sécurisé';
+    btn.disabled = false;
+  }
+}
+
+// ── INIT ──
+render();
+</script>
+</body>
+</html>
