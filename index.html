@@ -1226,7 +1226,7 @@ const PRODUCTS = [
     desc: 'Support mural pour accrocher vos médailles de trail, course à pied, CrossFit, Hyrox ou tout autre sport. Fixation discrète au mur. Vendu avec crochets afin de rajouter autant de module que vous souhaitez.',
     price: 14.90,
     badge: 'NOUVEAU',
-    image: "images/medal-rack-1.jpg",
+    image: 'images/medal-rack-1.jpg',
     category: 'sport',
     availableColors: COLORS,
   }
@@ -1273,7 +1273,8 @@ function renderProducts() {
     <div class="product-card" id="card-${p.id}" onclick="window.location.href='${p.id}.html'" style="cursor:pointer;">
       <div class="product-img" style="position:relative;">
         <div class="product-badge">${p.badge}</div>
-        <span style="font-size:5rem;position:relative;z-index:1;"><img src=${p.image}></span>
+        //<span style="font-size:5rem;position:relative;z-index:1;"><img src=${p.image}></span>
+        <img src="images/medal-rack-1.jpg">
         <div class="prod-hover-overlay">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(255,107,26,0.95)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         </div>
