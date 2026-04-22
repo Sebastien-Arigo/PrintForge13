@@ -707,7 +707,7 @@
     <!-- UPSELL -->
     <div class="upsell">
       <div class="upsell-title">💡 Conseil du Forge</div>
-      <div class="upsell-text">Les modules s'emboîtent entre eux — commandez-en plusieurs pour créer un mur de médailles complet. À partir de 3 unités, livraison offerte en point relais.</div>
+      <div class="upsell-text">Les modules s'emboîtent entre eux — commandez-en plusieurs pour créer un mur de médailles complet. <strong>Livraison offerte dès 50 € d'achat</strong>, soit 4 modules ou plus.</div>
     </div>
 
     <!-- COLOR PICKER -->
@@ -826,7 +826,7 @@
 
 <script>
 // ── DATA ──
-const UNIT_PRICE = 14.90;
+const UNIT_PRICE = 24.90;
 const PRODUCT_ID = 'medal-rack';
 
 const COLORS = [
@@ -846,12 +846,7 @@ const COLORS = [
 ];
 
 // Paliers de promotion (déclenchés à l'affichage uniquement, pas de remise Stripe ici)
-<!-- 
-  const PROMO_TIERS = [
-  { min: 3, msg: '🎉 Livraison offerte en point relais à partir de 3 unités !' },
-  { min: 5, msg: '🔥 Pack 5 modules — contactez-nous pour une offre groupée !' },
-];
-  -->
+// Paliers supprimés — la livraison offerte est gérée au niveau du panier (seuil 50€)
 
 // Galerie (placeholders — remplace par les vraies images)
 const THUMBS_CONTENT = [
@@ -914,17 +909,17 @@ function updateQtyUI() {
     document.getElementById('multiPriceHint').textContent = '';
   }
 
-  // Promo messages
-  const promo = [...PROMO_TIERS].reverse().find(t => currentQty >= t.min);
+  // Message livraison
   const promoEl = document.getElementById('qtyPromoMsg');
   const shipEl  = document.getElementById('qtyShippingMsg');
-  if (promo) {
-    promoEl.textContent = promo.msg;
+  const lineTotal = UNIT_PRICE * currentQty;
+  const remaining = Math.max(0, 50 - lineTotal);
+  if (remaining === 0) {
+    promoEl.textContent = '🎉 Livraison offerte sur cette commande !';
     shipEl.textContent = '';
   } else {
     promoEl.textContent = '';
-    const next = PROMO_TIERS.find(t => currentQty < t.min);
-    shipEl.textContent = next ? `Encore ${next.min - currentQty} pour : ${next.msg}` : '';
+    shipEl.textContent = `Encore ${remaining.toFixed(2).replace('.', ',')} € pour la livraison offerte (dès 50 €)`;
   }
 }
 
