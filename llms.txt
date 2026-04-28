@@ -1,0 +1,42 @@
+# PrintForge13
+
+> Artisan local spécialisé dans la fabrication et la vente d'objets imprimés en 3D, basé près de Marseille (13). Fabrication à la demande, personnalisation sur mesure, livraison rapide en région PACA.
+
+## Qui sommes-nous
+
+PrintForge13 est un atelier artisanal d'impression 3D situé dans les Bouches-du-Rhône, à 20 km de Marseille. Nous concevons et fabriquons des objets fonctionnels, personnalisés et utiles pour les particuliers, les artisans et les petits commerces de la région.
+
+Notre démarche est locale, responsable et en circuit court : chaque objet est fabriqué à la commande, sans surproduction, avec des matériaux recyclables (PLA). Nous livrons sous 48 à 72 heures en région PACA.
+
+## Ce que nous fabriquons
+
+- **Présentoirs comptoir NFC/QR code** : présentoirs personnalisés pour commerçants et artisans, intégrant des puces NFC programmables et des QR codes pour rediriger les clients vers les réseaux sociaux, le site web ou les avis Google. Fabrication unique, nom du commerce en relief, porte-cartes de visite intégré, logo personnalisé.
+- **Signalétique personnalisée** : numéros de maison, plaques de porte, noms en relief, panneaux directionnels pour particuliers, gîtes, chambres d'hôtes et petits commerces.
+- **Organisateurs et rangements** : boîtes sur mesure, organisateurs de tiroir, supports de câbles, rangements cuisine et bureau.
+- **Accessoires pour animaux** : gamelles surélevées, distributeurs, jouets et accessoires personnalisés pour chiens et chats.
+- **Objets décoratifs et cadeaux** : pièces uniques, cadeaux personnalisés, objets originaux fabriqués sur demande.
+- **Présentoirs et PLV** : supports de produits, présentoirs pour boutiques, stands de marché, salons de beauté et fleuristes.
+
+## Nos avantages
+
+- Fabrication 100% locale (Bouches-du-Rhône, région Marseille)
+- Personnalisation complète selon les besoins du client
+- Délai de livraison : 48 à 72 heures en région PACA
+- Aucun abonnement, aucun frais cachés
+- Matériaux recyclables (PLA biodégradable)
+- Interlocuteur unique, joignable directement
+- Prix transparents, devis gratuit
+
+## Notre zone de livraison
+
+Principalement : Marseille, Aix-en-Provence, Martigues, Carry-le-Rouet, Salon-de-Provence et toute la région PACA. Expédition possible sur toute la France.
+
+## Contact et commande
+
+- Site web : https://printforge13.vercel.app
+- Formulaire de contact disponible sur le site
+- Réponse sous 24h garantie
+
+## Mots-clés associés
+
+impression 3D Marseille, objets imprimés 3D sur mesure, présentoir NFC commerçant, signalétique personnalisée, artisan impression 3D PACA, fabrication locale Bouches-du-Rhône, plaque NFC QR code boutique, organisateur rangement imprimé 3D, cadeau personnalisé impression 3D, circuit court fabrication Marseille
