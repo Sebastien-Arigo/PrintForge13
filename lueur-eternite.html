@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lueur d'éternité — Centres de table lumineux personnalisés</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --creme: #f7f0e6;
+    --peche: #f2c49b;
+    --peche-light: #fae8d4;
+    --peche-dark: #d4956a;
+    --or: #c9a96e;
+    --brun: #6b4c35;
+    --texte: #3a2e26;
+    --texte-light: #8a7468;
+    --blanc: #fffcf7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--creme);
+    color: var(--texte);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    background: var(--peche-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 60px 80px 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-left::after {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    background: var(--peche-light);
+    clip-path: polygon(0 0, 0 100%, 100% 100%);
+    z-index: 3;
+  }
+
+  .brand-tag {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--peche-dark);
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(48px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--brun);
+    margin-bottom: 8px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--peche-dark);
+  }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--texte-light);
+    margin-bottom: 40px;
+    letter-spacing: 0.05em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+
+  .hero-desc {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--texte-light);
+    max-width: 400px;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+  }
+
+  .cta-group {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 1s;
+  }
+
+  .btn-primary {
+    background: var(--brun);
+    color: var(--creme);
+    padding: 14px 32px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background: var(--peche-dark);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    color: var(--brun);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid var(--peche-dark);
+    padding-bottom: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-secondary:hover { color: var(--peche-dark); }
+
+  .hero-right {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    animation: fadeIn 1.2s ease forwards 0.5s;
+  }
+
+  .hero-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--peche-light) 0%, transparent 40%);
+  }
+
+  /* DECORATIVE ORNAMENT */
+  .ornament {
+    text-align: center;
+    padding: 60px 20px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--peche-dark);
+    letter-spacing: 0.1em;
+    position: relative;
+  }
+
+  .ornament::before,
+  .ornament::after {
+    content: '—';
+    margin: 0 20px;
+    color: var(--or);
+  }
+
+  /* SECTION */
+  section { padding: 100px 80px; }
+
+  .section-label {
+    font-family: 'Jost', sans-serif;
+    font-weight: 200;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--peche-dark);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 3vw, 48px);
+    font-weight: 300;
+    color: var(--brun);
+    line-height: 1.2;
+    margin-bottom: 24px;
+  }
+
+  .section-title em { font-style: italic; }
+
+  /* COLLECTION */
+  .collection { background: var(--blanc); }
+
+  .collection-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+    margin-top: 60px;
+  }
+
+  .product-card {
+    position: relative;
+    background: var(--creme);
+    overflow: hidden;
+    cursor: default;
+  }
+
+  .product-card:hover .product-overlay { opacity: 1; }
+  .product-card:hover .product-image-wrap img { transform: scale(1.05); }
+
+  .product-image-wrap {
+    aspect-ratio: 4/5;
+    overflow: hidden;
+    background: var(--peche-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+
+  .product-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(145deg, var(--peche-light), var(--creme));
+  }
+
+  .product-placeholder svg {
+    width: 48px;
+    height: 48px;
+    opacity: 0.3;
+  }
+
+  .product-info {
+    padding: 24px;
+  }
+
+  .product-status {
+    display: inline-block;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    margin-bottom: 12px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+  }
+
+  .status-available {
+    background: var(--brun);
+    color: var(--creme);
+  }
+
+  .status-soon {
+    background: transparent;
+    color: var(--peche-dark);
+    border: 1px solid var(--peche);
+  }
+
+  .product-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--brun);
+    margin-bottom: 8px;
+  }
+
+  .product-desc {
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--texte-light);
+  }
+
+  /* ABOUT */
+  .about {
+    background: var(--peche-light);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .about-text p {
+    font-size: 14px;
+    line-height: 2;
+    color: var(--texte-light);
+    margin-bottom: 20px;
+  }
+
+  .about-features {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .feature {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--peche);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--peche-dark);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+  }
+
+  .feature-text h4 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--brun);
+    margin-bottom: 4px;
+  }
+
+  .feature-text p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--texte-light);
+  }
+
+  /* DEVIS FORM */
+  .devis {
+    background: var(--brun);
+    color: var(--creme);
+  }
+
+  .devis .section-label { color: var(--peche); }
+  .devis .section-title { color: var(--creme); }
+  .devis .section-title em { color: var(--peche); }
+
+  .devis-intro {
+    font-size: 14px;
+    line-height: 1.8;
+    color: rgba(247,240,230,0.7);
+    max-width: 500px;
+    margin-bottom: 60px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 800px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-group label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--peche);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(247,240,230,0.2);
+    padding: 12px 0;
+    color: var(--creme);
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    outline: none;
+    transition: border-color 0.3s ease;
+    width: 100%;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-bottom-color: var(--peche);
+  }
+
+  .form-group select option { background: var(--brun); }
+
+  .form-group textarea {
+    resize: none;
+    height: 80px;
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: rgba(247,240,230,0.3);
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    grid-column: 1 / -1;
+  }
+
+  .checkbox-group label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--peche);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+  }
+
+  .checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(247,240,230,0.3);
+    background: transparent;
+    cursor: pointer;
+    accent-color: var(--peche-dark);
+    flex-shrink: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(247,240,230,0.3);
+  }
+
+  .checkbox-item span {
+    font-size: 13px;
+    color: rgba(247,240,230,0.7);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .btn-submit {
+    margin-top: 40px;
+    background: var(--peche-dark);
+    color: var(--blanc);
+    padding: 16px 48px;
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .btn-submit:hover {
+    background: var(--or);
+    transform: translateY(-2px);
+  }
+
+  /* FOOTER */
+  footer {
+    background: #2a1f17;
+    color: rgba(247,240,230,0.4);
+    padding: 40px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+  }
+
+  footer a {
+    color: var(--peche);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  footer a:hover { color: var(--creme); }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    color: var(--peche-light);
+    font-style: italic;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--peche), transparent);
+    margin: 0 80px;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .hero-left { padding: 80px 40px; }
+    .hero-left::after { display: none; }
+    section { padding: 60px 40px; }
+    .about { grid-template-columns: 1fr; gap: 40px; }
+    .form-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 20px; text-align: center; }
+    .divider { margin: 0 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="brand-tag">Lueur d'éternité &nbsp;·&nbsp; by PrintForge13</div>
+    <h1 class="hero-title">Des souvenirs<br>qui <em>brillent</em><br>pour toujours</h1>
+    <p class="hero-subtitle">Centres de table lumineux personnalisés pour votre mariage</p>
+    <p class="hero-desc">
+      Chaque pièce est fabriquée artisanalement à Marseille. Lithophanie 3D rétroéclairée, personnalisée avec les prénoms des mariés, le numéro de table et le menu — un objet unique que vos invités VIP garderont comme souvenir.
+    </p>
+    <div class="cta-group">
+      <a href="#devis" class="btn-primary">Demander un devis</a>
+      <a href="#collection" class="btn-secondary">Voir la collection</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <!-- Remplacer src par votre photo produit -->
+    <div style="width:100%;height:100%;background:linear-gradient(145deg,#fae8d4,#f2c49b);display:flex;align-items:center;justify-content:center;">
+      <div style="text-align:center;padding:40px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:64px;color:rgba(107,76,53,0.15);font-style:italic;line-height:1;">✦</div>
+        <p style="font-family:'Jost',sans-serif;font-size:11px;letter-spacing:0.3em;color:rgba(107,76,53,0.4);text-transform:uppercase;margin-top:16px;">Photo produit</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="ornament">L'instant capturé, la lumière préservée, l'émotion éternelle</div>
+
+<!-- COLLECTION -->
+<section class="collection" id="collection">
+  <div class="reveal">
+    <div class="section-label">Notre collection</div>
+    <h2 class="section-title">Une gamme pensée<br>pour <em>chaque table</em></h2>
+  </div>
+
+  <div class="collection-grid reveal">
+
+    <!-- Centre de table — DISPONIBLE -->
+    <div class="product-card">
+      <div class="product-image-wrap">
+        <div class="product-placeholder">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="16" y="8" width="32" height="48" rx="2" stroke="#c9a96e" stroke-width="1.5"/>
+            <line x1="16" y1="20" x2="48" y2="20" stroke="#c9a96e" stroke-width="1"/>
+            <circle cx="32" cy="36" r="8" stroke="#c9a96e" stroke-width="1.5"/>
+          </svg>
+          <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.2em;color:rgba(107,76,53,0.4);text-transform:uppercase;">Photo à venir</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-status status-available">Disponible</span>
+        <h3 class="product-name">Centre de table lumineux</h3>
+        <p class="product-desc">Lithophanie 3D rétroéclairée — photo des mariés, numéro de table, menu personnalisé. Autonomie 17h+ sur piles ou version rechargeable USB-C.</p>
+      </div>
+    </div>
+
+    <!-- Marque-place — DISPONIBLE -->
+    <div class="product-card">
+      <div class="product-image-wrap">
+        <div class="product-placeholder">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,8 56,24 56,40 32,56 8,40 8,24" stroke="#c9a96e" stroke-width="1.5" fill="none"/>
+            <text x="32" y="36" text-anchor="middle" font-family="serif" font-size="14" fill="rgba(107,76,53,0.3)">A</text>
+          </svg>
+          <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.2em;color:rgba(107,76,53,0.4);text-transform:uppercase;">Photo à venir</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-status status-available">Disponible</span>
+        <h3 class="product-name">Marque-place hexagonal</h3>
+        <p class="product-desc">Prénom de l'invité, initiales des mariés, date. Option QR code au verso. Format hexagonal assorti à la gamme.</p>
+      </div>
+    </div>
+
+    <!-- Faux sceau de cire — DISPONIBLE -->
+    <div class="product-card">
+      <div class="product-image-wrap">
+        <div class="product-placeholder">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="32" r="20" stroke="#c9a96e" stroke-width="1.5"/>
+            <text x="32" y="37" text-anchor="middle" font-family="serif" font-size="16" fill="rgba(107,76,53,0.3)">M&amp;L</text>
+          </svg>
+          <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.2em;color:rgba(107,76,53,0.4);text-transform:uppercase;">Photo à venir</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-status status-available">Disponible</span>
+        <h3 class="product-name">Faux sceau de cire</h3>
+        <p class="product-desc">Initiales des mariés en relief, aspect cire traditionnel. Permet de fixer le ruban des boite de dragées, en décoration de table ou élément de papeterie (lettre d'invitation). Personnalisable.</p>
+      </div>
+    </div>
+
+    <!-- Dessous de verre — BIENTÔT -->
+    <div class="product-card">
+      <div class="product-image-wrap">
+        <div class="product-placeholder">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,6 58,20 58,44 32,58 6,44 6,20" stroke="#c9a96e" stroke-width="1.5" fill="none"/>
+            <circle cx="32" cy="32" r="12" stroke="#c9a96e" stroke-width="1" stroke-dasharray="3,2"/>
+          </svg>
+          <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.2em;color:rgba(107,76,53,0.4);text-transform:uppercase;">Photo à venir</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-status status-soon">Bientôt disponible</span>
+        <h3 class="product-name">Dessous de verre</h3>
+        <p class="product-desc">Hexagonal, motif floral gravé, initiales et date en relief. Souvenir utile que vos invités garderont longtemps après le mariage.</p>
+      </div>
+    </div>
+
+    <!-- Statuette — BIENTÔT -->
+    <div class="product-card">
+      <div class="product-image-wrap">
+        <div class="product-placeholder">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 12 C24 12 20 18 20 24 C20 32 32 44 32 44 C32 44 44 32 44 24 C44 18 40 12 32 12Z" stroke="#c9a96e" stroke-width="1.5" fill="none"/>
+            <line x1="32" y1="44" x2="32" y2="54" stroke="#c9a96e" stroke-width="1.5"/>
+          </svg>
+          <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.2em;color:rgba(107,76,53,0.4);text-transform:uppercase;">Photo à venir</span>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-status status-soon">Bientôt disponible</span>
+        <h3 class="product-name">Statuette personnalisée</h3>
+        <p class="product-desc">Sculpture 3D sur mesure avec les initiales des mariés. Cadeau d'exception, pièce unique à conserver.</p>
+      </div>
+    </div>
+
+    <!-- Épingle nominative — BIENTÔT -->
+    <div class="product-card">
+      <div class="product-image-wrap">
+        <div class="product-placeholder">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="32" cy="24" r="10" stroke="#c9a96e" stroke-width="1.5"/>
+            <line x1="32" y1="34" x2="32" y2="56" stroke="#c9a96e" stroke-width="1.5"/>
+            <text x="32" y="28" text-anchor="middle" font-family="serif" font-size="10" fill="rgba(107,76,53,0.3)">M</text>
+          </svg>
+          <span style="font-family:'Jost',sans-serif;font-size:10px;letter-spacing:0.2em;color:rgba(107,76,53,0.4);text-transform:uppercase;">Photo à venir</span>
+        </div>
+      </div>
+      <div class="product-info">
+	<span class="product-status status-available">Disponible</span>
+        <h3 class="product-name">Épingle nominative</h3>
+        <p class="product-desc">Marque-verre personnalisé au prénom de chaque invité. Élégant, pratique, mémorable.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT / POURQUOI NOUS -->
+<section class="about reveal">
+  <div class="about-text">
+    <div class="section-label">Notre savoir-faire</div>
+    <h2 class="section-title">Fabriqué à <em>Marseille</em>,<br>pensé pour durer</h2>
+    <p>Chaque pièce de la collection Lueur d'éternité est conçue et fabriquée artisanalement dans notre atelier marseillais. Nous utilisons des techniques d'impression 3D de précision pour créer des lithophanies d'une finesse exceptionnelle.</p>
+    <p>Nous travaillons en étroite collaboration avec les wedding planners pour garantir une personnalisation parfaite et un rendu à la hauteur de vos exigences.</p>
+  </div>
+  <div class="about-features">
+    <div class="feature">
+      <div class="feature-icon">✦</div>
+      <div class="feature-text">
+        <h4>100% personnalisé</h4>
+        <p>Chaque pièce porte les prénoms ou les initiales, la date et les détails uniques de votre mariage.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">◎</div>
+      <div class="feature-text">
+        <h4>Fabriqué en France</h4>
+        <p>Atelier artisanal à Marseille. Délais maîtrisés, qualité garantie.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">◇</div>
+      <div class="feature-text">
+        <h4>Gamme cohérente</h4>
+        <p>Tous les éléments s'accordent entre eux pour une table harmonieuse.</p>
+      </div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">∞</div>
+      <div class="feature-text">
+        <h4>Souvenir durable</h4>
+        <p>Un objet que vos invités garderont bien après la fête.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FORMULAIRE DEVIS -->
+<section class="devis" id="devis">
+  <div class="reveal">
+    <div class="section-label">Parlons de votre projet</div>
+    <h2 class="section-title">Demandez votre <em>devis</em></h2>
+    <p class="devis-intro">Partagez-nous les détails de votre mariage. Nous vous répondons sous 48h avec une proposition personnalisée.</p>
+  </div>
+
+  <form class="form-grid reveal" action="https://formspree.io/YOUR_ID" method="POST">
+    <div class="form-group">
+      <label>Votre prénom & nom</label>
+      <input type="text" name="nom" placeholder="Marie Dupont" required>
+    </div>
+    <div class="form-group">
+      <label>Email professionnel</label>
+      <input type="email" name="email" placeholder="contact@votreagence.fr" required>
+    </div>
+    <div class="form-group">
+      <label>Date du mariage</label>
+      <input type="date" name="date_mariage">
+    </div>
+    <div class="form-group">
+      <label>Nombre de tables</label>
+      <input type="number" name="nb_tables" placeholder="ex : 15" min="1">
+    </div>
+    <div class="form-group">
+      <label>Nombre d'invités</label>
+      <input type="number" name="nb_invites" placeholder="ex : 120" min="1">
+    </div>
+    <div class="form-group">
+      <label>Coloris souhaité</label>
+      <select name="coloris">
+        <option value="">Choisir une teinte</option>
+        <option>Pêche — chaleureux & champêtre</option>
+        <option>Rose sakura — romantique & classique</option>
+        <option>Bleu glacier — épuré & moderne</option>
+        <option>Doré — élégant & luxueux</option>
+        <option>Ivoire — intemporel & minimaliste</option>
+        <option>À définir ensemble</option>
+      </select>
+    </div>
+
+    <div class="checkbox-group">
+      <label>Produits souhaités</label>
+      <label class="checkbox-item">
+        <input type="checkbox" name="produits" value="centre_table">
+        <span>Centre de table lumineux (disponible)</span>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" name="produits" value="marque_place">
+        <span>Marque-place hexagonal (disponible)</span>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" name="produits" value="sceau_cire">
+        <span>Faux sceau de cire (disponible)</span>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" name="produits" value="dessous_verre">
+        <span>Dessous de verre (bientôt disponible)</span>
+      </label>
+    </div>
+
+    <div class="form-group full">
+      <label>Message ou précisions</label>
+      <textarea name="message" placeholder="Thème du mariage, contraintes particulières, questions..."></textarea>
+    </div>
+
+    <div style="grid-column: 1/-1;">
+      <button type="submit" class="btn-submit">Envoyer ma demande</button>
+    </div>
+  </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Lueur d'éternité</div>
+  <div>by <a href="https://printforge13.fr" target="_blank">PrintForge13</a> &nbsp;·&nbsp; Marseille &nbsp;·&nbsp; <a href="mailto:Printforge13@gmail.com">Printforge13@gmail.com</a></div>
+  <div><a href="https://www.instagram.com/printforge13" target="_blank">@printforge13</a></div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Form submit
+  const form = document.querySelector('form');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      if (form.action.includes('YOUR_ID')) {
+        e.preventDefault();
+        alert('Formulaire non encore configuré. Contactez-nous directement à Printforge13@gmail.com');
+      }
+    });
+  }
+</script>
+</body>
+</html>
